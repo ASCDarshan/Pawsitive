@@ -9,7 +9,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const mapContainerStyle = {
   width: "100%",
-  height: "400px", // Increased height for better visibility
+  height: "400px",
 };
 
 const defaultCenter = {
@@ -17,12 +17,9 @@ const defaultCenter = {
   lng: 78.9629,
 };
 
-// Define the libraries to load
 const libraries = ["places"];
 
-// Define advanced keywords for each category based on detailed requirements
 const categoryKeywords = {
-  // NEW PET CATEGORIES - DOG RESOURCES
   dog_health: [
     "veterinarian for dogs",
     "emergency vet clinic",
@@ -33,9 +30,9 @@ const categoryKeywords = {
     "pet insurance for dogs",
     "dog vaccination clinic",
     "canine healthcare",
-    "dog wellness"
+    "dog wellness",
   ],
-  
+
   dog_nutrition: [
     "pet food store",
     "dog food specialty",
@@ -45,9 +42,9 @@ const categoryKeywords = {
     "fresh dog food",
     "grain free dog food",
     "prescription dog food",
-    "puppy food"
+    "puppy food",
   ],
-  
+
   dog_supplies: [
     "dog collar and leash",
     "dog harness",
@@ -58,9 +55,9 @@ const categoryKeywords = {
     "poop bags",
     "dog grooming supplies",
     "dog crate",
-    "dog kennels"
+    "dog kennels",
   ],
-  
+
   dog_services: [
     "dog walker",
     "pet sitter",
@@ -71,9 +68,9 @@ const categoryKeywords = {
     "dog kennels",
     "dog daycare",
     "dog park",
-    "dog obedience school"
+    "dog obedience school",
   ],
-  
+
   dog_information: [
     "pet resources",
     "dog breed information",
@@ -84,10 +81,9 @@ const categoryKeywords = {
     "online vet consultation",
     "dog adoption center",
     "dog breeder",
-    "canine behavior specialist"
+    "canine behavior specialist",
   ],
-  
-  // CAT RESOURCES
+
   cat_health: [
     "veterinarian for cats",
     "emergency vet clinic cats",
@@ -98,9 +94,9 @@ const categoryKeywords = {
     "cat healthcare",
     "feline wellness",
     "cat healthcare specialist",
-    "pet insurance for cats"
+    "pet insurance for cats",
   ],
-  
+
   cat_nutrition: [
     "cat food store",
     "specialty cat food",
@@ -111,9 +107,9 @@ const categoryKeywords = {
     "raw cat food",
     "grain free cat food",
     "kitten food",
-    "senior cat food"
+    "senior cat food",
   ],
-  
+
   cat_supplies: [
     "cat collar",
     "cat harness",
@@ -126,9 +122,9 @@ const categoryKeywords = {
     "cat litter",
     "cat grooming supplies",
     "cat trees",
-    "cat furniture"
+    "cat furniture",
   ],
-  
+
   cat_services: [
     "cat sitter",
     "cat groomer",
@@ -137,9 +133,9 @@ const categoryKeywords = {
     "cattery",
     "professional cat grooming",
     "mobile cat groomer",
-    "cat daycare"
+    "cat daycare",
   ],
-  
+
   cat_information: [
     "cat resources",
     "cat breed information",
@@ -149,27 +145,28 @@ const categoryKeywords = {
     "feline behavior specialist",
     "cat adoption center",
     "cat breeder",
-    "online vet for cats"
-  ]
+    "online vet for cats",
+  ],
+
+  pet_emergency_24_7: ["24/7 pet emergency "],
+
+  adoption: ["pet adoption center"],
 };
 
 const categoryTypes = {
-  // NEW DOG RESOURCE TYPES
   dog_health: ["veterinary_care", "pet_store", "health"],
   dog_nutrition: ["pet_store", "store", "establishment"],
   dog_supplies: ["pet_store", "store", "establishment"],
   dog_services: ["pet_store", "establishment", "park"],
   dog_information: ["establishment", "library", "pet_store"],
-  
-  // CAT RESOURCE TYPES
+
   cat_health: ["veterinary_care", "pet_store", "health"],
   cat_nutrition: ["pet_store", "store", "establishment"],
   cat_supplies: ["pet_store", "store", "establishment"],
   cat_services: ["pet_store", "establishment"],
-  cat_information: ["establishment", "library", "pet_store"]
+  cat_information: ["establishment", "library", "pet_store"],
 };
 
-// When no resources are found, use these mock resources for testing
 const mockResources = {
   dog_health: [
     {
@@ -186,7 +183,7 @@ const mockResources = {
       rating: 4.7,
       userRatingsTotal: 156,
       category: "dog_health",
-      type: "Veterinarian"
+      type: "Veterinarian",
     },
     {
       id: "mock-dog-vet-2",
@@ -202,8 +199,8 @@ const mockResources = {
       rating: 4.5,
       userRatingsTotal: 98,
       category: "dog_health",
-      type: "Emergency Clinic"
-    }
+      type: "Emergency Clinic",
+    },
   ],
   dog_nutrition: [
     {
@@ -220,8 +217,8 @@ const mockResources = {
       rating: 4.3,
       userRatingsTotal: 87,
       category: "dog_nutrition",
-      type: "Pet Food Store"
-    }
+      type: "Pet Food Store",
+    },
   ],
   dog_services: [
     {
@@ -238,7 +235,7 @@ const mockResources = {
       rating: 4.6,
       userRatingsTotal: 75,
       category: "dog_services",
-      type: "Dog Walker"
+      type: "Dog Walker",
     },
     {
       id: "mock-dog-trainer-1",
@@ -254,8 +251,8 @@ const mockResources = {
       rating: 4.8,
       userRatingsTotal: 112,
       category: "dog_services",
-      type: "Dog Trainer"
-    }
+      type: "Dog Trainer",
+    },
   ],
   cat_health: [
     {
@@ -268,12 +265,13 @@ const mockResources = {
       website: "https://example.com/felinewellness",
       status: "Open",
       hours: ["Monday-Friday: 9AM-6PM", "Saturday: 10AM-3PM", "Sunday: Closed"],
-      photoUrl: "https://via.placeholder.com/400x300?text=Feline+Wellness+Center",
+      photoUrl:
+        "https://via.placeholder.com/400x300?text=Feline+Wellness+Center",
       rating: 4.8,
       userRatingsTotal: 112,
       category: "cat_health",
-      type: "Veterinarian"
-    }
+      type: "Veterinarian",
+    },
   ],
   cat_services: [
     {
@@ -290,729 +288,886 @@ const mockResources = {
       rating: 4.7,
       userRatingsTotal: 89,
       category: "cat_services",
-      type: "Cat Sitter"
-    }
-  ]
+      type: "Cat Sitter",
+    },
+  ],
 };
 
-const Googlemap = React.forwardRef(({ onResourcesFetched = () => {}, center, viewMode = "map", directions = false, destination = null, onMapLoaded = () => {} }, ref) => {
-  const { category } = useParams();
-  const navigate = useNavigate();
-  const [userLocation, setUserLocation] = useState(null);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [nearbyResources, setNearbyResources] = useState([]);
-  const [loadingResources, setLoadingResources] = useState(true);
-  const [resourcesError, setResourcesError] = useState(null);
-  const [mapsError, setMapsError] = useState(null);
-  const [locationRequested, setLocationRequested] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchedPlaces = useRef(new Set());
-  
-  // Get API key from environment variable or use a default key for testing
-  const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY_HERE";
-  
-  // Log API key (but mask it for security)
-  useEffect(() => {
-    const maskedKey = googleMapsApiKey?.substring(0, 4) + "..." + googleMapsApiKey?.substring(googleMapsApiKey.length - 4);
-    console.log("Using Google Maps API Key (masked):", maskedKey);
-    if (!googleMapsApiKey || googleMapsApiKey === "YOUR_API_KEY_HERE") {
-      console.warn("⚠️ No Google Maps API key found in environment variables. Map functionality will be limited.");
-      setMapsError("API key missing or invalid");
-    }
-  }, [googleMapsApiKey]);
+const Googlemap = React.forwardRef(
+  (
+    {
+      onResourcesFetched = () => {},
+      center,
+      viewMode = "map",
+      directions = false,
+      destination = null,
+      onMapLoaded = () => {},
+    },
+    ref
+  ) => {
+    const { category } = useParams();
+    const navigate = useNavigate();
+    const [userLocation, setUserLocation] = useState(null);
+    const [selectedMarker, setSelectedMarker] = useState(null);
+    const [nearbyResources, setNearbyResources] = useState([]);
+    const [loadingResources, setLoadingResources] = useState(true);
+    const [resourcesError, setResourcesError] = useState(null);
+    const [mapsError, setMapsError] = useState(null);
+    const [locationRequested, setLocationRequested] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const searchedPlaces = useRef(new Set());
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: googleMapsApiKey,
-    libraries: libraries,
-  });
+    // Get API key from environment variable or use a default key for testing
+    const googleMapsApiKey =
+      process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY_HERE";
 
-  // Log Maps loading status
-  useEffect(() => {
-    console.log("Google Maps loading status:", isLoaded ? "Loaded" : "Loading...");
-    if (loadError) {
-      console.error("Google Maps load error:", loadError);
-      setMapsError(loadError.message);
-    }
-  }, [isLoaded, loadError]);
-
-  // Improved relevance score calculation with more accurate category matching and search query prioritization
-  const calculateRelevanceScore = (place, keyword) => {
-    let score = 0;
-    
-    // Name matching - more weight for exact matches
-    const placeName = place.name.toLowerCase();
-    const keywordLower = keyword.toLowerCase();
-    
-    // If we have a search query, prioritize places that match it
-    if (searchQuery && searchQuery.trim() !== "") {
-      const searchTerms = searchQuery.toLowerCase().split(/\s+/);
-      
-      // Huge bonus if ALL search terms are in the name
-      if (searchTerms.every(term => placeName.includes(term))) {
-        score += 50;
+    // Log API key (but mask it for security)
+    useEffect(() => {
+      const maskedKey =
+        googleMapsApiKey?.substring(0, 4) +
+        "..." +
+        googleMapsApiKey?.substring(googleMapsApiKey.length - 4);
+      console.log("Using Google Maps API Key (masked):", maskedKey);
+      if (!googleMapsApiKey || googleMapsApiKey === "YOUR_API_KEY_HERE") {
+        console.warn(
+          "⚠️ No Google Maps API key found in environment variables. Map functionality will be limited."
+        );
+        setMapsError("API key missing or invalid");
       }
-      
-      // Additional points for each search term found
-      searchTerms.forEach(term => {
-        if (placeName.includes(term)) {
-          score += 10;
-        }
-      });
-    }
-    
-    if (placeName === keywordLower) {
-      score += 30; // Exact match gets highest score
-    } else if (placeName.includes(keywordLower)) {
-      score += 15; // Partial match
-    }
-    
-    // Specific service type checking based on search query
-    if (searchQuery) {
-      const searchQueryLower = searchQuery.toLowerCase();
-      
-      // Dog trainers
-      if (searchQueryLower.includes("trainer") || searchQueryLower.includes("training")) {
-        if (placeName.includes("trainer") || placeName.includes("training") || 
-            placeName.includes("obedience") || placeName.includes("school")) {
-          score += 40;
-        } else {
-          score -= 20; // Penalize non-trainer places when specifically searching for trainers
-        }
-      }
-      
-      // Dog walkers
-      if (searchQueryLower.includes("walker") || searchQueryLower.includes("walking")) {
-        if (placeName.includes("walker") || placeName.includes("walking")) {
-          score += 40;
-        } else {
-          score -= 20; // Penalize non-walker places when specifically searching for walkers
-        }
-      }
-      
-      // Groomers
-      if (searchQueryLower.includes("groom")) {
-        if (placeName.includes("groom")) {
-          score += 40;
-        } else {
-          score -= 20;
-        }
-      }
-      
-      // Vets/Veterinarians
-      if (searchQueryLower.includes("vet") || searchQueryLower.includes("clinic") || 
-          searchQueryLower.includes("hospital") || searchQueryLower.includes("doctor")) {
-        if (placeName.includes("vet") || placeName.includes("clinic") || 
-            placeName.includes("hospital") || placeName.includes("doctor") || 
-            placeName.includes("medical")) {
-          score += 40;
-        } else {
-          score -= 20;
-        }
-      }
-    }
-    
-    // Original category-specific checks
-    if (category === 'dog_services' && 
-        (placeName.includes('walker') || 
-         placeName.includes('walking') || 
-         placeName.includes('daycare') || 
-         placeName.includes('boarding') ||
-         placeName.includes('trainer') ||
-         placeName.includes('training'))) {
-      score += 20;
-    }
-    
-    if (category === 'cat_services' && 
-        (placeName.includes('sitter') || 
-         placeName.includes('sitting') || 
-         placeName.includes('boarding') ||
-         placeName.includes('groomer') ||
-         placeName.includes('grooming'))) {
-      score += 20;
-    }
-    
-    // Check for health-related keywords
-    if (category?.includes('_health') && 
-        (placeName.includes('vet') || 
-         placeName.includes('clinic') || 
-         placeName.includes('hospital') ||
-         placeName.includes('doctor') ||
-         placeName.includes('emergency'))) {
-      score += 20;
-    }
-    
-    // Rating score
-    if (place.rating) {
-      score += place.rating * 2;
-    }
-    
-    // User ratings total - more ratings means more confidence
-    if (place.user_ratings_total) {
-      score += Math.min(place.user_ratings_total / 50, 10); // Increased weight for popular places
-    }
-    
-    return score;
-  };
+    }, [googleMapsApiKey]);
 
-  const fetchPlaceDetails = async (service, place) => {
-    return new Promise((resolve) => {
-      const detailsRequest = {
-        placeId: place.place_id,
-        fields: [
-          "name",
-          "vicinity",
-          "geometry",
-          "formatted_phone_number",
-          "business_status",
-          "opening_hours",
-          "photos",
-          "types",
-          "rating",
-          "user_ratings_total",
-          "website",
-          "formatted_address",
-          "international_phone_number"
-        ],
-      };
-
-      service.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
-        if (detailsStatus === window.google.maps.places.PlacesServiceStatus.OK) {
-          const photoUrl = placeDetails.photos?.[0]?.getUrl({
-            maxHeight: 300,
-            maxWidth: 400,
-          });
-
-          // Enhanced resource type determination with search query awareness
-          let resourceType = "Establishment";
-          const name = placeDetails.name.toLowerCase();
-          const types = placeDetails.types || [];
-          
-          // First check for search query-specific resource types
-          if (searchQuery) {
-            const searchQueryLower = searchQuery.toLowerCase();
-            // Dog trainers
-            if (searchQueryLower.includes("trainer") || searchQueryLower.includes("training")) {
-              if (name.includes("train") || name.includes("obedience") || name.includes("school")) {
-                resourceType = "Dog Trainer";
-              }
-            }
-            // Dog walkers
-            else if (searchQueryLower.includes("walker") || searchQueryLower.includes("walking")) {
-              if (name.includes("walk")) {
-                resourceType = "Dog Walker";
-              }
-            }
-            // Groomers
-            else if (searchQueryLower.includes("groom")) {
-              if (name.includes("groom")) {
-                resourceType = category?.startsWith("dog") ? "Dog Groomer" : "Cat Groomer";
-              }
-            }
-            // Vets
-            else if (searchQueryLower.includes("vet") || searchQueryLower.includes("clinic") || 
-                    searchQueryLower.includes("hospital")) {
-              if (name.includes("vet") || name.includes("clinic") || name.includes("hospital") || 
-                  name.includes("doctor") || name.includes("care")) {
-                resourceType = "Veterinarian";
-              }
-            }
-          }
-          
-          // If no specific search match, use category and place type logic
-          if (resourceType === "Establishment") {
-            // Categorize health resources
-            if (types.includes("veterinary_care") || 
-                name.includes("vet") || 
-                name.includes("clinic") || 
-                name.includes("hospital")) {
-              resourceType = "Veterinarian";
-            } 
-            // Categorize dog services
-            else if (category === "dog_services") {
-              if (name.includes("walk") || name.includes("walker")) {
-                resourceType = "Dog Walker";
-              } else if (name.includes("train") || name.includes("obedience")) {
-                resourceType = "Dog Trainer";
-              } else if (name.includes("daycare") || name.includes("boarding")) {
-                resourceType = "Pet Boarding";
-              } else if (name.includes("groom")) {
-                resourceType = "Pet Groomer";
-              } else if (types.includes("park") || name.includes("park")) {
-                resourceType = "Dog Park";
-              }
-            }
-            // Categorize cat services
-            else if (category === "cat_services") {
-              if (name.includes("sit") || name.includes("sitter")) {
-                resourceType = "Cat Sitter";
-              } else if (name.includes("groom")) {
-                resourceType = "Cat Groomer";
-              } else if (name.includes("board") || name.includes("hotel")) {
-                resourceType = "Cat Boarding";
-              }
-            }
-            // Categorize nutrition and food
-            else if (category?.includes("_nutrition")) {
-              resourceType = "Pet Food Store";
-            }
-            // Categorize supplies
-            else if (category?.includes("_supplies")) {
-              resourceType = "Pet Supplies";
-            }
-          }
-
-          const formattedResource = {
-            id: place.place_id,
-            name: placeDetails.name,
-            address: placeDetails.formatted_address || placeDetails.vicinity,
-            lat: placeDetails.geometry.location.lat(),
-            lng: placeDetails.geometry.location.lng(),
-            phone: placeDetails.international_phone_number || placeDetails.formatted_phone_number || "N/A",
-            website: placeDetails.website || "N/A",
-            status: placeDetails.business_status === "OPERATIONAL" ? "Open" : "Closed",
-            hours: placeDetails.opening_hours?.weekday_text || "N/A",
-            photoUrl,
-            types: placeDetails.types || [],
-            rating: placeDetails.rating || 0,
-            userRatingsTotal: placeDetails.user_ratings_total || 0,
-            category: category, // Make sure to include the category
-            type: resourceType // Add the determined resource type
-          };
-
-          resolve(formattedResource);
-        } else {
-          console.warn("Place details fetch failed:", detailsStatus);
-          resolve(null);
-        }
-      });
+    const { isLoaded, loadError } = useLoadScript({
+      googleMapsApiKey: googleMapsApiKey,
+      libraries: libraries,
     });
-  };
 
-  const performSearch = async (service, location, keyword) => {
-    return new Promise((resolve) => {
-      // Adjust request based on search query
-      let type = categoryTypes[category?.toLowerCase()]?.[0] || "establishment";
-      
-      // If we have a specific search query for a service type, adjust the search parameters
+    // Log Maps loading status
+    useEffect(() => {
+      console.log(
+        "Google Maps loading status:",
+        isLoaded ? "Loaded" : "Loading..."
+      );
+      if (loadError) {
+        console.error("Google Maps load error:", loadError);
+        setMapsError(loadError.message);
+      }
+    }, [isLoaded, loadError]);
+
+    // Improved relevance score calculation with more accurate category matching and search query prioritization
+    const calculateRelevanceScore = (place, keyword) => {
+      let score = 0;
+
+      // Name matching - more weight for exact matches
+      const placeName = place.name.toLowerCase();
+      const keywordLower = keyword.toLowerCase();
+
+      // If we have a search query, prioritize places that match it
+      if (searchQuery && searchQuery.trim() !== "") {
+        const searchTerms = searchQuery.toLowerCase().split(/\s+/);
+
+        // Huge bonus if ALL search terms are in the name
+        if (searchTerms.every((term) => placeName.includes(term))) {
+          score += 50;
+        }
+
+        // Additional points for each search term found
+        searchTerms.forEach((term) => {
+          if (placeName.includes(term)) {
+            score += 10;
+          }
+        });
+      }
+
+      if (placeName === keywordLower) {
+        score += 30; // Exact match gets highest score
+      } else if (placeName.includes(keywordLower)) {
+        score += 15; // Partial match
+      }
+
+      // Specific service type checking based on search query
       if (searchQuery) {
         const searchQueryLower = searchQuery.toLowerCase();
-        if (searchQueryLower.includes("vet") || searchQueryLower.includes("clinic")) {
-          type = "veterinary_care";
-        } else if (searchQueryLower.includes("park")) {
-          type = "park";
+
+        // Dog trainers
+        if (
+          searchQueryLower.includes("trainer") ||
+          searchQueryLower.includes("training")
+        ) {
+          if (
+            placeName.includes("trainer") ||
+            placeName.includes("training") ||
+            placeName.includes("obedience") ||
+            placeName.includes("school")
+          ) {
+            score += 40;
+          } else {
+            score -= 20; // Penalize non-trainer places when specifically searching for trainers
+          }
         }
-      }
-      
-      const request = {
-        location: new window.google.maps.LatLng(location.lat, location.lng),
-        radius: 10000, // Using radius instead of rankBy
-        keyword: keyword,
-        type: type
-      };
 
-      console.log(`Searching for: ${keyword} with type: ${type}`);
-      
-      service.nearbySearch(request, (results, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-          console.log(`Found ${results.length} results for keyword "${keyword}"`);
-          resolve(results);
-        } else {
-          console.warn(`Search failed for keyword ${keyword}:`, status);
-          resolve([]);
+        // Dog walkers
+        if (
+          searchQueryLower.includes("walker") ||
+          searchQueryLower.includes("walking")
+        ) {
+          if (placeName.includes("walker") || placeName.includes("walking")) {
+            score += 40;
+          } else {
+            score -= 20; // Penalize non-walker places when specifically searching for walkers
+          }
         }
-      });
-    });
-  };
 
-  // Enhanced filter function for more precise search results
-  const filterBySearchQuery = (resources, query) => {
-    if (!query || query.trim() === "") {
-      return resources;
-    }
-    
-    const queryTerms = query.toLowerCase().trim().split(/\s+/);
-    
-    // First, try to find exact matches for specific service types
-    const exactTypeMatches = resources.filter(resource => {
-      const type = resource.type.toLowerCase();
-      // Look for exact type matches first
-      return queryTerms.join(' ') === type || 
-             type.includes(queryTerms.join(' '));
-    });
-    
-    // If we found exact matches, return those
-    if (exactTypeMatches.length > 0) {
-      return exactTypeMatches;
-    }
-    
-    // Otherwise, use more general matching
-    return resources.filter(resource => {
-      const name = resource.name.toLowerCase();
-      const type = resource.type.toLowerCase();
-      const address = resource.address.toLowerCase();
-      
-      // Check if ALL query terms are in either name, type, or address
-      // This makes searching for "dog trainer" only return results containing both words
-      return queryTerms.every(term => 
-        name.includes(term) || type.includes(term) || address.includes(term)
-      );
-    });
-  };
-
-  const fetchNearbyPlaces = useCallback(async (location, keywords) => {
-    setLoadingResources(true);
-    setResourcesError(null);
-
-    // Check if Google Maps is loaded
-    if (!window.google || !window.google.maps) {
-      console.error("Google Maps not loaded");
-      setResourcesError("Google Maps failed to load. Please refresh the page and try again.");
-      setLoadingResources(false);
-      
-      // Use mock data as fallback
-      const mockData = mockResources[category?.toLowerCase()] || [];
-      
-      // Apply search query filter if needed
-      const filteredMockData = searchQuery && searchQuery.trim() !== "" 
-        ? filterBySearchQuery(mockData, searchQuery)
-        : mockData;
-      
-      onResourcesFetched(filteredMockData);
-      setNearbyResources(filteredMockData);
-      return;
-    }
-
-    console.log("Fetching nearby places for category:", category);
-    console.log("Using keywords:", keywords);
-
-    const service = new window.google.maps.places.PlacesService(
-      document.createElement("div")
-    );
-
-    const allResults = new Map();
-    searchedPlaces.current.clear();
-
-    try {
-      // Determine search keywords based on search query
-      let searchKeywords;
-      if (searchQuery && searchQuery.trim() !== "") {
-        // Use the search query as the primary keyword
-        searchKeywords = [searchQuery];
-        
-        // Also add some related terms based on the query for better results
-        const searchQueryLower = searchQuery.toLowerCase();
-        if (searchQueryLower.includes("trainer") || searchQueryLower.includes("training")) {
-          searchKeywords.push("dog trainer", "dog training", "obedience training", "puppy training");
-        } else if (searchQueryLower.includes("walker") || searchQueryLower.includes("walking")) {
-          searchKeywords.push("dog walker", "dog walking", "pet walking service");
-        } else if (searchQueryLower.includes("vet") || searchQueryLower.includes("clinic")) {
-          searchKeywords.push("veterinarian", "animal hospital", "pet clinic");
-        } else if (searchQueryLower.includes("groom")) {
-          searchKeywords.push("pet groomer", "dog grooming", "cat grooming");
-        } else {
-          // Only add category keywords as secondary if search is not specific
-          searchKeywords = [...searchKeywords, ...keywords];
+        // Groomers
+        if (searchQueryLower.includes("groom")) {
+          if (placeName.includes("groom")) {
+            score += 40;
+          } else {
+            score -= 20;
+          }
         }
-      } else {
-        searchKeywords = keywords;
-      }
-      
-      for (const keyword of searchKeywords) {
-        const results = await performSearch(service, location, keyword);
-        
-        for (const place of results) {
-          if (!searchedPlaces.current.has(place.place_id)) {
-            searchedPlaces.current.add(place.place_id);
-            
-            const relevanceScore = calculateRelevanceScore(place, keyword);
 
-            if (!allResults.has(place.place_id) || 
-                allResults.get(place.place_id).relevanceScore < relevanceScore) {
-              allResults.set(place.place_id, {
-                place,
-                relevanceScore,
-                keyword // Store the keyword that found this place
-              });
-            }
+        // Vets/Veterinarians
+        if (
+          searchQueryLower.includes("vet") ||
+          searchQueryLower.includes("clinic") ||
+          searchQueryLower.includes("hospital") ||
+          searchQueryLower.includes("doctor")
+        ) {
+          if (
+            placeName.includes("vet") ||
+            placeName.includes("clinic") ||
+            placeName.includes("hospital") ||
+            placeName.includes("doctor") ||
+            placeName.includes("medical")
+          ) {
+            score += 40;
+          } else {
+            score -= 20;
           }
         }
       }
 
-      // Sort and limit results
-      const sortedResults = Array.from(allResults.values())
-        .sort((a, b) => b.relevanceScore - a.relevanceScore)
-        .slice(0, 20);
-
-      console.log(`Found ${sortedResults.length} unique places after processing`);
-
-      // Fetch details for top results
-      const detailedResources = await Promise.all(
-        sortedResults.map(({ place }) => fetchPlaceDetails(service, place))
-      );
-
-      const validResources = detailedResources.filter(resource => resource !== null);
-      console.log(`Got details for ${validResources.length} resources`);
-      
-      if (validResources.length === 0) {
-        console.log("No resources found, using mock data for this category");
-        const mockData = mockResources[category?.toLowerCase()] || [];
-        
-        // If we have a specific search query, filter the mock data too
-        const filteredMockData = searchQuery && searchQuery.trim() !== "" 
-          ? filterBySearchQuery(mockData, searchQuery)
-          : mockData;
-          
-        onResourcesFetched(filteredMockData);
-        setNearbyResources(filteredMockData);
-      } else {
-        // Apply search query filter if needed
-        const filteredResources = searchQuery && searchQuery.trim() !== ""
-          ? filterBySearchQuery(validResources, searchQuery)
-          : validResources;
-          
-        onResourcesFetched(filteredResources);
-        setNearbyResources(filteredResources);
+      // Original category-specific checks
+      if (
+        category === "dog_services" &&
+        (placeName.includes("walker") ||
+          placeName.includes("walking") ||
+          placeName.includes("daycare") ||
+          placeName.includes("boarding") ||
+          placeName.includes("trainer") ||
+          placeName.includes("training"))
+      ) {
+        score += 20;
       }
-      
-    } catch (error) {
-      console.error("Error in fetchNearbyPlaces:", error);
-      setResourcesError("Failed to fetch resources. " + error.message);
-      
-      // Use mock data as fallback
-      const mockData = mockResources[category?.toLowerCase()] || [];
-      
-      // Filter mock data if we have a search query
-      const filteredMockData = searchQuery && searchQuery.trim() !== "" 
-        ? filterBySearchQuery(mockData, searchQuery)
-        : mockData;
-        
-      onResourcesFetched(filteredMockData);
-      setNearbyResources(filteredMockData);
-    } finally {
-      setLoadingResources(false);
-    }
-  }, [category, onResourcesFetched, searchQuery]);
 
-  const requestLocation = useCallback(() => {
-    console.log("Requesting user location...");
-    setLocationRequested(true);
-    
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Got user location:", position.coords);
-          const userPos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setUserLocation(userPos);
-          
-          // Get keywords for this category
-          const keywords = categoryKeywords[category?.toLowerCase()] || ["pet store"];
-          fetchNearbyPlaces(userPos, keywords);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setResourcesError(`Location permission denied: ${error.message}. Using default location.`);
-          setUserLocation(defaultCenter);
-          
-          // Get keywords for this category
-          const keywords = categoryKeywords[category?.toLowerCase()] || ["pet store"];
-          fetchNearbyPlaces(defaultCenter, keywords);
-        },
-        { 
-          enableHighAccuracy: true, 
-          timeout: 5000,
-          maximumAge: 0
+      if (
+        category === "cat_services" &&
+        (placeName.includes("sitter") ||
+          placeName.includes("sitting") ||
+          placeName.includes("boarding") ||
+          placeName.includes("groomer") ||
+          placeName.includes("grooming"))
+      ) {
+        score += 20;
+      }
+
+      // Check for health-related keywords
+      if (
+        category?.includes("_health") &&
+        (placeName.includes("vet") ||
+          placeName.includes("clinic") ||
+          placeName.includes("hospital") ||
+          placeName.includes("doctor") ||
+          placeName.includes("emergency"))
+      ) {
+        score += 20;
+      }
+
+      // Rating score
+      if (place.rating) {
+        score += place.rating * 2;
+      }
+
+      // User ratings total - more ratings means more confidence
+      if (place.user_ratings_total) {
+        score += Math.min(place.user_ratings_total / 50, 10); // Increased weight for popular places
+      }
+
+      return score;
+    };
+
+    const fetchPlaceDetails = async (service, place) => {
+      return new Promise((resolve) => {
+        const detailsRequest = {
+          placeId: place.place_id,
+          fields: [
+            "name",
+            "vicinity",
+            "geometry",
+            "formatted_phone_number",
+            "business_status",
+            "opening_hours",
+            "photos",
+            "types",
+            "rating",
+            "user_ratings_total",
+            "website",
+            "formatted_address",
+            "international_phone_number",
+          ],
+        };
+
+        service.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
+          if (
+            detailsStatus === window.google.maps.places.PlacesServiceStatus.OK
+          ) {
+            const photoUrl = placeDetails.photos?.[0]?.getUrl({
+              maxHeight: 300,
+              maxWidth: 400,
+            });
+
+            // Enhanced resource type determination with search query awareness
+            let resourceType = "Establishment";
+            const name = placeDetails.name.toLowerCase();
+            const types = placeDetails.types || [];
+
+            // First check for search query-specific resource types
+            if (searchQuery) {
+              const searchQueryLower = searchQuery.toLowerCase();
+              // Dog trainers
+              if (
+                searchQueryLower.includes("trainer") ||
+                searchQueryLower.includes("training")
+              ) {
+                if (
+                  name.includes("train") ||
+                  name.includes("obedience") ||
+                  name.includes("school")
+                ) {
+                  resourceType = "Dog Trainer";
+                }
+              }
+              // Dog walkers
+              else if (
+                searchQueryLower.includes("walker") ||
+                searchQueryLower.includes("walking")
+              ) {
+                if (name.includes("walk")) {
+                  resourceType = "Dog Walker";
+                }
+              }
+              // Groomers
+              else if (searchQueryLower.includes("groom")) {
+                if (name.includes("groom")) {
+                  resourceType = category?.startsWith("dog")
+                    ? "Dog Groomer"
+                    : "Cat Groomer";
+                }
+              }
+              // Vets
+              else if (
+                searchQueryLower.includes("vet") ||
+                searchQueryLower.includes("clinic") ||
+                searchQueryLower.includes("hospital")
+              ) {
+                if (
+                  name.includes("vet") ||
+                  name.includes("clinic") ||
+                  name.includes("hospital") ||
+                  name.includes("doctor") ||
+                  name.includes("care")
+                ) {
+                  resourceType = "Veterinarian";
+                }
+              }
+            }
+
+            // If no specific search match, use category and place type logic
+            if (resourceType === "Establishment") {
+              // Categorize health resources
+              if (
+                types.includes("veterinary_care") ||
+                name.includes("vet") ||
+                name.includes("clinic") ||
+                name.includes("hospital")
+              ) {
+                resourceType = "Veterinarian";
+              }
+              // Categorize dog services
+              else if (category === "dog_services") {
+                if (name.includes("walk") || name.includes("walker")) {
+                  resourceType = "Dog Walker";
+                } else if (
+                  name.includes("train") ||
+                  name.includes("obedience")
+                ) {
+                  resourceType = "Dog Trainer";
+                } else if (
+                  name.includes("daycare") ||
+                  name.includes("boarding")
+                ) {
+                  resourceType = "Pet Boarding";
+                } else if (name.includes("groom")) {
+                  resourceType = "Pet Groomer";
+                } else if (types.includes("park") || name.includes("park")) {
+                  resourceType = "Dog Park";
+                }
+              }
+              // Categorize cat services
+              else if (category === "cat_services") {
+                if (name.includes("sit") || name.includes("sitter")) {
+                  resourceType = "Cat Sitter";
+                } else if (name.includes("groom")) {
+                  resourceType = "Cat Groomer";
+                } else if (name.includes("board") || name.includes("hotel")) {
+                  resourceType = "Cat Boarding";
+                }
+              }
+              // Categorize nutrition and food
+              else if (category?.includes("_nutrition")) {
+                resourceType = "Pet Food Store";
+              }
+              // Categorize supplies
+              else if (category?.includes("_supplies")) {
+                resourceType = "Pet Supplies";
+              }
+            }
+
+            const formattedResource = {
+              id: place.place_id,
+              name: placeDetails.name,
+              address: placeDetails.formatted_address || placeDetails.vicinity,
+              lat: placeDetails.geometry.location.lat(),
+              lng: placeDetails.geometry.location.lng(),
+              phone:
+                placeDetails.international_phone_number ||
+                placeDetails.formatted_phone_number ||
+                "N/A",
+              website: placeDetails.website || "N/A",
+              status:
+                placeDetails.business_status === "OPERATIONAL"
+                  ? "Open"
+                  : "Closed",
+              hours: placeDetails.opening_hours?.weekday_text || "N/A",
+              photoUrl,
+              types: placeDetails.types || [],
+              rating: placeDetails.rating || 0,
+              userRatingsTotal: placeDetails.user_ratings_total || 0,
+              category: category, // Make sure to include the category
+              type: resourceType, // Add the determined resource type
+            };
+
+            resolve(formattedResource);
+          } else {
+            console.warn("Place details fetch failed:", detailsStatus);
+            resolve(null);
+          }
+        });
+      });
+    };
+
+    const performSearch = async (service, location, keyword) => {
+      return new Promise((resolve) => {
+        // Adjust request based on search query
+        let type =
+          categoryTypes[category?.toLowerCase()]?.[0] || "establishment";
+
+        // If we have a specific search query for a service type, adjust the search parameters
+        if (searchQuery) {
+          const searchQueryLower = searchQuery.toLowerCase();
+          if (
+            searchQueryLower.includes("vet") ||
+            searchQueryLower.includes("clinic")
+          ) {
+            type = "veterinary_care";
+          } else if (searchQueryLower.includes("park")) {
+            type = "park";
+          }
         }
-      );
-    } else {
-      console.warn("Geolocation not supported by this browser");
-      setResourcesError("Geolocation is not supported by your browser. Using default location.");
-      setUserLocation(defaultCenter);
-      
-      // Get keywords for this category
-      const keywords = categoryKeywords[category?.toLowerCase()] || ["pet store"];
-      fetchNearbyPlaces(defaultCenter, keywords);
-    }
-  }
-  , [category, fetchNearbyPlaces]);
-  const handleMarkerClick = (resource) => {
-    setSelectedMarker(resource);
-  };
-  const handleMapClick = () => {
-    setSelectedMarker(null);
-  };
-  const handleMarkerClose = () => {
-    setSelectedMarker(null);
-  };
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    if (userLocation) {
-      const keywords = categoryKeywords[category?.toLowerCase()] || ["pet store"];
-      fetchNearbyPlaces(userLocation, keywords);
-    }
-  };
-  const handleViewModeChange = (mode) => {
-    navigate(`/map/${category}/${mode}`);
-  };
-  const handleDirectionsClick = () => {
-    if (destination) {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}`, "_blank");
-    }
-  };
-  const handleMapLoad = (map) => {
-    onMapLoaded(map);
-  };
-  useEffect(() => {
-    if (isLoaded && !locationRequested) {
-      requestLocation();
-    }
-  }, [isLoaded, locationRequested, requestLocation]);
-  useEffect(() => {
+
+        const request = {
+          location: new window.google.maps.LatLng(location.lat, location.lng),
+          radius: 10000, // Using radius instead of rankBy
+          keyword: keyword,
+          type: type,
+        };
+
+        console.log(`Searching for: ${keyword} with type: ${type}`);
+
+        service.nearbySearch(request, (results, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+            console.log(
+              `Found ${results.length} results for keyword "${keyword}"`
+            );
+            resolve(results);
+          } else {
+            console.warn(`Search failed for keyword ${keyword}:`, status);
+            resolve([]);
+          }
+        });
+      });
+    };
+
+    // Enhanced filter function for more precise search results
+    const filterBySearchQuery = (resources, query) => {
+      if (!query || query.trim() === "") {
+        return resources;
+      }
+
+      const queryTerms = query.toLowerCase().trim().split(/\s+/);
+
+      // First, try to find exact matches for specific service types
+      const exactTypeMatches = resources.filter((resource) => {
+        const type = resource.type.toLowerCase();
+        // Look for exact type matches first
+        return (
+          queryTerms.join(" ") === type || type.includes(queryTerms.join(" "))
+        );
+      });
+
+      // If we found exact matches, return those
+      if (exactTypeMatches.length > 0) {
+        return exactTypeMatches;
+      }
+
+      // Otherwise, use more general matching
+      return resources.filter((resource) => {
+        const name = resource.name.toLowerCase();
+        const type = resource.type.toLowerCase();
+        const address = resource.address.toLowerCase();
+
+        // Check if ALL query terms are in either name, type, or address
+        // This makes searching for "dog trainer" only return results containing both words
+        return queryTerms.every(
+          (term) =>
+            name.includes(term) || type.includes(term) || address.includes(term)
+        );
+      });
+    };
+
+    const fetchNearbyPlaces = useCallback(
+      async (location, keywords) => {
+        setLoadingResources(true);
+        setResourcesError(null);
+
+        // Check if Google Maps is loaded
+        if (!window.google || !window.google.maps) {
+          console.error("Google Maps not loaded");
+          setResourcesError(
+            "Google Maps failed to load. Please refresh the page and try again."
+          );
+          setLoadingResources(false);
+
+          // Use mock data as fallback
+          const mockData = mockResources[category?.toLowerCase()] || [];
+
+          // Apply search query filter if needed
+          const filteredMockData =
+            searchQuery && searchQuery.trim() !== ""
+              ? filterBySearchQuery(mockData, searchQuery)
+              : mockData;
+
+          onResourcesFetched(filteredMockData);
+          setNearbyResources(filteredMockData);
+          return;
+        }
+
+        console.log("Fetching nearby places for category:", category);
+        console.log("Using keywords:", keywords);
+
+        const service = new window.google.maps.places.PlacesService(
+          document.createElement("div")
+        );
+
+        const allResults = new Map();
+        searchedPlaces.current.clear();
+
+        try {
+          // Determine search keywords based on search query
+          let searchKeywords;
+          if (searchQuery && searchQuery.trim() !== "") {
+            // Use the search query as the primary keyword
+            searchKeywords = [searchQuery];
+
+            // Also add some related terms based on the query for better results
+            const searchQueryLower = searchQuery.toLowerCase();
+            if (
+              searchQueryLower.includes("trainer") ||
+              searchQueryLower.includes("training")
+            ) {
+              searchKeywords.push(
+                "dog trainer",
+                "dog training",
+                "obedience training",
+                "puppy training"
+              );
+            } else if (
+              searchQueryLower.includes("walker") ||
+              searchQueryLower.includes("walking")
+            ) {
+              searchKeywords.push(
+                "dog walker",
+                "dog walking",
+                "pet walking service"
+              );
+            } else if (
+              searchQueryLower.includes("vet") ||
+              searchQueryLower.includes("clinic")
+            ) {
+              searchKeywords.push(
+                "veterinarian",
+                "animal hospital",
+                "pet clinic"
+              );
+            } else if (searchQueryLower.includes("groom")) {
+              searchKeywords.push(
+                "pet groomer",
+                "dog grooming",
+                "cat grooming"
+              );
+            } else {
+              // Only add category keywords as secondary if search is not specific
+              searchKeywords = [...searchKeywords, ...keywords];
+            }
+          } else {
+            searchKeywords = keywords;
+          }
+
+          for (const keyword of searchKeywords) {
+            const results = await performSearch(service, location, keyword);
+
+            for (const place of results) {
+              if (!searchedPlaces.current.has(place.place_id)) {
+                searchedPlaces.current.add(place.place_id);
+
+                const relevanceScore = calculateRelevanceScore(place, keyword);
+
+                if (
+                  !allResults.has(place.place_id) ||
+                  allResults.get(place.place_id).relevanceScore < relevanceScore
+                ) {
+                  allResults.set(place.place_id, {
+                    place,
+                    relevanceScore,
+                    keyword, // Store the keyword that found this place
+                  });
+                }
+              }
+            }
+          }
+
+          // Sort and limit results
+          const sortedResults = Array.from(allResults.values())
+            .sort((a, b) => b.relevanceScore - a.relevanceScore)
+            .slice(0, 20);
+
+          console.log(
+            `Found ${sortedResults.length} unique places after processing`
+          );
+
+          // Fetch details for top results
+          const detailedResources = await Promise.all(
+            sortedResults.map(({ place }) => fetchPlaceDetails(service, place))
+          );
+
+          const validResources = detailedResources.filter(
+            (resource) => resource !== null
+          );
+          console.log(`Got details for ${validResources.length} resources`);
+
+          if (validResources.length === 0) {
+            console.log(
+              "No resources found, using mock data for this category"
+            );
+            const mockData = mockResources[category?.toLowerCase()] || [];
+
+            // If we have a specific search query, filter the mock data too
+            const filteredMockData =
+              searchQuery && searchQuery.trim() !== ""
+                ? filterBySearchQuery(mockData, searchQuery)
+                : mockData;
+
+            onResourcesFetched(filteredMockData);
+            setNearbyResources(filteredMockData);
+          } else {
+            // Apply search query filter if needed
+            const filteredResources =
+              searchQuery && searchQuery.trim() !== ""
+                ? filterBySearchQuery(validResources, searchQuery)
+                : validResources;
+
+            onResourcesFetched(filteredResources);
+            setNearbyResources(filteredResources);
+          }
+        } catch (error) {
+          console.error("Error in fetchNearbyPlaces:", error);
+          setResourcesError("Failed to fetch resources. " + error.message);
+
+          // Use mock data as fallback
+          const mockData = mockResources[category?.toLowerCase()] || [];
+
+          // Filter mock data if we have a search query
+          const filteredMockData =
+            searchQuery && searchQuery.trim() !== ""
+              ? filterBySearchQuery(mockData, searchQuery)
+              : mockData;
+
+          onResourcesFetched(filteredMockData);
+          setNearbyResources(filteredMockData);
+        } finally {
+          setLoadingResources(false);
+        }
+      },
+      [category, onResourcesFetched, searchQuery]
+    );
+
+    const requestLocation = useCallback(() => {
+      console.log("Requesting user location...");
+      setLocationRequested(true);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Got user location:", position.coords);
+            const userPos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            setUserLocation(userPos);
+
+            // Get keywords for this category
+            const keywords = categoryKeywords[category?.toLowerCase()] || [
+              "pet store",
+            ];
+            fetchNearbyPlaces(userPos, keywords);
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            setResourcesError(
+              `Location permission denied: ${error.message}. Using default location.`
+            );
+            setUserLocation(defaultCenter);
+
+            // Get keywords for this category
+            const keywords = categoryKeywords[category?.toLowerCase()] || [
+              "pet store",
+            ];
+            fetchNearbyPlaces(defaultCenter, keywords);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        console.warn("Geolocation not supported by this browser");
+        setResourcesError(
+          "Geolocation is not supported by your browser. Using default location."
+        );
+        setUserLocation(defaultCenter);
+
+        // Get keywords for this category
+        const keywords = categoryKeywords[category?.toLowerCase()] || [
+          "pet store",
+        ];
+        fetchNearbyPlaces(defaultCenter, keywords);
+      }
+    }, [category, fetchNearbyPlaces]);
+    const handleMarkerClick = (resource) => {
+      setSelectedMarker(resource);
+    };
+    const handleMapClick = () => {
+      setSelectedMarker(null);
+    };
+    const handleMarkerClose = () => {
+      setSelectedMarker(null);
+    };
+    const handleSearch = (event) => {
+      setSearchQuery(event.target.value);
+    };
+    const handleSearchSubmit = (event) => {
+      event.preventDefault();
+      if (userLocation) {
+        const keywords = categoryKeywords[category?.toLowerCase()] || [
+          "pet store",
+        ];
+        fetchNearbyPlaces(userLocation, keywords);
+      }
+    };
+    const handleViewModeChange = (mode) => {
+      navigate(`/map/${category}/${mode}`);
+    };
+    const handleDirectionsClick = () => {
+      if (destination) {
+        window.open(
+          `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}`,
+          "_blank"
+        );
+      }
+    };
+    const handleMapLoad = (map) => {
+      onMapLoaded(map);
+    };
+    useEffect(() => {
+      if (isLoaded && !locationRequested) {
+        requestLocation();
+      }
+    }, [isLoaded, locationRequested, requestLocation]);
+    useEffect(() => {
+      if (mapsError) {
+        console.error("Maps error:", mapsError);
+      }
+    }, [mapsError]);
+    useEffect(() => {
+      if (loadingResources) {
+        console.log("Loading resources...");
+      } else {
+        console.log("Resources loaded");
+      }
+    }, [loadingResources]);
+    useEffect(() => {
+      if (resourcesError) {
+        console.error("Resources error:", resourcesError);
+      }
+    }, [resourcesError]);
+    useEffect(() => {
+      if (userLocation) {
+        console.log("User location updated:", userLocation);
+      }
+    }, [userLocation]);
+    useEffect(() => {
+      if (nearbyResources.length > 0) {
+        console.log("Nearby resources updated:", nearbyResources);
+      }
+    }, [nearbyResources]);
+    useEffect(() => {
+      if (selectedMarker) {
+        console.log("Selected marker:", selectedMarker);
+      }
+    }, [selectedMarker]);
+    useEffect(() => {
+      if (searchQuery) {
+        console.log("Search query updated:", searchQuery);
+      }
+    }, [searchQuery]);
+    useEffect(() => {
+      if (viewMode) {
+        console.log("View mode changed:", viewMode);
+      }
+    }, [viewMode]);
+    useEffect(() => {
+      if (directions) {
+        console.log("Directions mode enabled");
+      }
+    }, [directions]);
+    useEffect(() => {
+      if (destination) {
+        console.log("Destination set:", destination);
+      }
+    }, [destination]);
+    useEffect(() => {
+      if (category) {
+        console.log("Category changed:", category);
+      }
+    }, [category]);
+    useEffect(() => {
+      if (ref) {
+        ref.current = {
+          requestLocation,
+          fetchNearbyPlaces,
+          handleViewModeChange,
+          handleDirectionsClick,
+        };
+      }
+    }, [
+      ref,
+      requestLocation,
+      fetchNearbyPlaces,
+      handleViewModeChange,
+      handleDirectionsClick,
+    ]);
     if (mapsError) {
-      console.error("Maps error:", mapsError);
+      return <div>Error loading map: {mapsError}</div>;
     }
-  }, [mapsError]);
-  useEffect(() => {
-    if (loadingResources) {
-      console.log("Loading resources...");
-    } else {
-      console.log("Resources loaded");
+    if (!isLoaded) {
+      return <div>Loading map...</div>;
     }
-  }, [loadingResources]);
-  useEffect(() => {
-    if (resourcesError) {
-      console.error("Resources error:", resourcesError);
-    }
-  }, [resourcesError]);
-  useEffect(() => {
-    if (userLocation) {
-      console.log("User location updated:", userLocation);
-    }
-  }, [userLocation]);
-  useEffect(() => {
-    if (nearbyResources.length > 0) {
-      console.log("Nearby resources updated:", nearbyResources);
-    }
-  }, [nearbyResources]);
-  useEffect(() => {
-    if (selectedMarker) {
-      console.log("Selected marker:", selectedMarker);
-    }
-  }, [selectedMarker]);
-  useEffect(() => {
-    if (searchQuery) {
-      console.log("Search query updated:", searchQuery);
-    }
-  }, [searchQuery]);
-  useEffect(() => {
-    if (viewMode) {
-      console.log("View mode changed:", viewMode);
-    }
-  }, [viewMode]);
-  useEffect(() => {
-    if (directions) {
-      console.log("Directions mode enabled");
-    }
-  }, [directions]);
-  useEffect(() => {
-    if (destination) {
-      console.log("Destination set:", destination);
-    }
-  }, [destination]);
-  useEffect(() => {
-    if (category) {
-      console.log("Category changed:", category);
-    }
-  }, [category]);
-  useEffect(() => {
-    if (ref) {
-      ref.current = {
-        requestLocation,
-        fetchNearbyPlaces,
-        handleViewModeChange,
-        handleDirectionsClick,
-      };
-    }
-  }, [ref, requestLocation, fetchNearbyPlaces, handleViewModeChange, handleDirectionsClick]);
-  if (mapsError) {
-    return <div>Error loading map: {mapsError}</div>;
-  }
-  if (!isLoaded) {
-    return <div>Loading map...</div>;
-  }
-  return (
-    <div className="relative">
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={userLocation || center || defaultCenter}
-        zoom={10}
-        onLoad={handleMapLoad}
-        onClick={handleMapClick}
-      >
-        {userLocation && <Marker position={userLocation} />}
-        {nearbyResources.map((resource) => (
-          <Marker
-            key={resource.id}
-            position={{ lat: resource.lat, lng: resource.lng }}
-            onClick={() => handleMarkerClick(resource)}
-          />
-        ))}
-        {selectedMarker && (
-          <InfoWindow
-            position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
-            onCloseClick={handleMarkerClose}
-          >
-            <div>
-              <h2>{selectedMarker.name}</h2>
-              <p>{selectedMarker.address}</p>
-              <p>{selectedMarker.phone}</p>
-              <p>{selectedMarker.website}</p>
-              <p>{selectedMarker.status}</p>
-              <p>{selectedMarker.hours.join(", ")}</p>
-              {selectedMarker.photoUrl && (
-                <img src={selectedMarker.photoUrl} alt={selectedMarker.name} />
-              )}
-              {directions && (
-                <button onClick={handleDirectionsClick}>Get Directions</button>
-              )}
-            </div>
-          </InfoWindow>
-        )}
-      </GoogleMap>
-      {viewMode === "list" && (
-        <div className="absolute top-0 left-0 p-4 bg-white shadow-lg z-10">
-          <form onSubmit={handleSearchSubmit}>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearch}
-              placeholder="Search for resources..."
+    return (
+      <div className="relative">
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={userLocation || center || defaultCenter}
+          zoom={10}
+          onLoad={handleMapLoad}
+          onClick={handleMapClick}
+        >
+          {userLocation && <Marker position={userLocation} />}
+          {nearbyResources.map((resource) => (
+            <Marker
+              key={resource.id}
+              position={{ lat: resource.lat, lng: resource.lng }}
+              onClick={() => handleMarkerClick(resource)}
             />
-            <button type="submit">Search</button>
-          </form>
-          {loadingResources ? (
-            <p>Loading resources...</p>
-          ) : (
-            nearbyResources.map((resource) => (
-              <div key={resource.id}>
-                <h3>{resource.name}</h3>
-                <p>{resource.address}</p>
+          ))}
+          {selectedMarker && (
+            <InfoWindow
+              position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
+              onCloseClick={handleMarkerClose}
+            >
+              <div>
+                <h2>{selectedMarker.name}</h2>
+                <p>{selectedMarker.address}</p>
+                <p>{selectedMarker.phone}</p>
+                <p>{selectedMarker.website}</p>
+                <p>{selectedMarker.status}</p>
+                <p>{selectedMarker.hours.join(", ")}</p>
+                {selectedMarker.photoUrl && (
+                  <img
+                    src={selectedMarker.photoUrl}
+                    alt={selectedMarker.name}
+                  />
+                )}
                 {directions && (
-                  <button onClick={() => handleDirectionsClick(resource)}>Get Directions</button>
+                  <button onClick={handleDirectionsClick}>
+                    Get Directions
+                  </button>
                 )}
               </div>
-            ))
+            </InfoWindow>
           )}
-        </div>
-      )}
-    </div>
-  );
-}
+        </GoogleMap>
+        {viewMode === "list" && (
+          <div className="absolute top-0 left-0 p-4 bg-white shadow-lg z-10">
+            <form onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearch}
+                placeholder="Search for resources..."
+              />
+              <button type="submit">Search</button>
+            </form>
+            {loadingResources ? (
+              <p>Loading resources...</p>
+            ) : (
+              nearbyResources.map((resource) => (
+                <div key={resource.id}>
+                  <h3>{resource.name}</h3>
+                  <p>{resource.address}</p>
+                  {directions && (
+                    <button onClick={() => handleDirectionsClick(resource)}>
+                      Get Directions
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 );
 Googlemap.displayName = "Googlemap";
 export default Googlemap;

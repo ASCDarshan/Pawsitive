@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import theme from "./theme"; // Make sure this is your custom theme
+import theme from "./theme";
 
 import Home from "./components/Home/Home";
 import Login from "./components/Login/Login";
@@ -15,18 +15,19 @@ import ResourceList from "./components/Resources/ResourceList/ResourceList";
 import ResourceDetail from "./components/Resources/ResourceDetail/ResourceDetail";
 import NotFound from "./components/NotFound/NotFound";
 import NearbyMates from "./components/NearbyMates/NearbyMates";
+import ScrollToTop from "./UI/ScrollToTop";
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <ScrollToTop />
       <div className="min-h-screen bg-lavender-50">
         <Header />
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Routes>
             <Route path="/login" element={<Login />} />
 
-            {/* Home Route */}
             <Route
               path="/"
               element={
@@ -36,7 +37,6 @@ function App() {
               }
             />
 
-            {/* Dog Resources Routes */}
             <Route
               path="/dog-resources"
               element={
@@ -54,7 +54,6 @@ function App() {
               }
             />
 
-            {/* Cat Resources Routes */}
             <Route
               path="/cat-resources"
               element={
@@ -64,7 +63,6 @@ function App() {
               }
             />
 
-            {/* User Profile */}
             <Route
               path="/profile"
               element={
@@ -74,7 +72,6 @@ function App() {
               }
             />
 
-            {/* Resource Detail Page */}
             <Route
               path="/resource-details/:resourceId"
               element={
@@ -84,7 +81,6 @@ function App() {
               }
             />
 
-            {/* Map View Route */}
             <Route
               path="/map/:category"
               element={
@@ -94,7 +90,6 @@ function App() {
               }
             />
 
-            {/* Nearby Mates Route */}
             <Route
               path="/nearby-mates"
               element={
@@ -104,7 +99,6 @@ function App() {
               }
             />
 
-            {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

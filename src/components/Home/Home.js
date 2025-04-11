@@ -11,7 +11,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulating resource fetching
     setTimeout(() => {
       setLoading(false);
     }, 1000);
