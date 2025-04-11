@@ -1,19 +1,19 @@
 // components/PetCard.jsx
 import React from 'react';
-import { 
-  Card, 
-  CardHeader, 
-  CardContent, 
-  CardActions, 
-  Avatar, 
-  Typography, 
-  IconButton, 
-  Button, 
-  Grid, 
-  Box, 
-  Accordion, 
-  AccordionSummary, 
-  AccordionDetails, 
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Avatar,
+  Typography,
+  IconButton,
+  Button,
+  Grid,
+  Box,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Badge,
   Chip,
   Switch,
@@ -62,7 +62,7 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
 
 const PetAvatar = styled(Avatar)(({ petType }) => {
   let gradient = 'linear-gradient(135deg, #8A6CE0 0%, #6247AA 100%)';
-  
+
   if (petType === 'dog') {
     gradient = 'linear-gradient(135deg, #8A6CE0 0%, #6247AA 100%)'; // Purple gradient for dogs
   } else if (petType === 'cat') {
@@ -70,7 +70,7 @@ const PetAvatar = styled(Avatar)(({ petType }) => {
   } else if (petType === 'bird') {
     gradient = 'linear-gradient(135deg, #B3A4EC 0%, #9D8BE0 100%)'; // Even lighter purple gradient for birds
   }
-  
+
   return {
     background: gradient,
     width: 50,
@@ -121,8 +121,8 @@ const PlaceholderImage = styled(Box)(({ theme }) => ({
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
   boxShadow: 'none',
-  '&:before': { 
-    display: 'none' 
+  '&:before': {
+    display: 'none'
   },
   backgroundColor: 'transparent',
   '& .MuiAccordionSummary-root': {
@@ -213,7 +213,7 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
   // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    
+
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
@@ -221,22 +221,22 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
   // Function to check if vaccination is due soon (within 30 days)
   const isVaccinationDue = (nextDue) => {
     if (!nextDue) return false;
-    
+
     const dueDate = new Date(nextDue);
     const now = new Date();
     const oneMonthFromNow = new Date();
     oneMonthFromNow.setMonth(now.getMonth() + 1);
-    
+
     return dueDate <= oneMonthFromNow && dueDate > now;
   };
-  
+
   // Function to check if vaccination is overdue
   const isVaccinationOverdue = (nextDue) => {
     if (!nextDue) return false;
-    
+
     const dueDate = new Date(nextDue);
     const now = new Date();
-    
+
     return dueDate < now;
   };
 
@@ -244,47 +244,47 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
   const getVaccinationStatusChip = (vaccination) => {
     if (isVaccinationOverdue(vaccination.nextDue)) {
       return (
-        <Chip 
-          label="Overdue" 
-          size="small" 
-          sx={{ 
-            backgroundColor: '#FFE0E0', 
+        <Chip
+          label="Overdue"
+          size="small"
+          sx={{
+            backgroundColor: '#FFE0E0',
             color: '#D46363',
             fontWeight: 500,
             fontSize: '0.7rem',
             height: 20,
             borderRadius: 6
-          }} 
+          }}
         />
       );
     } else if (isVaccinationDue(vaccination.nextDue)) {
       return (
-        <Chip 
-          label="Due Soon" 
-          size="small" 
-          sx={{ 
-            backgroundColor: '#FFF4DD', 
+        <Chip
+          label="Due Soon"
+          size="small"
+          sx={{
+            backgroundColor: '#FFF4DD',
             color: '#D49A40',
             fontWeight: 500,
             fontSize: '0.7rem',
             height: 20,
             borderRadius: 6
-          }} 
+          }}
         />
       );
     } else {
       return (
-        <Chip 
-          label="Up to Date" 
-          size="small" 
-          sx={{ 
-            backgroundColor: '#E0F5E9', 
+        <Chip
+          label="Up to Date"
+          size="small"
+          sx={{
+            backgroundColor: '#E0F5E9',
             color: '#4B9E6F',
             fontWeight: 500,
             fontSize: '0.7rem',
             height: 20,
             borderRadius: 6
-          }} 
+          }}
         />
       );
     }
@@ -293,7 +293,7 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
   return (
     <StyledCard>
       {/* Removed Mating Status Badge from top */}
-      
+
       <StyledCardHeader
         avatar={
           <PetAvatar petType={pet.type}>
@@ -304,26 +304,26 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
         subheader={`${pet.breed || ''} ${pet.type}`}
         action={
           <Box>
-            <IconButton 
-              onClick={() => onEdit(pet)} 
+            <IconButton
+              onClick={() => onEdit(pet)}
               size="small"
-              sx={{ 
+              sx={{
                 color: '#8A6CE0',
-                '&:hover': { 
-                  backgroundColor: 'rgba(138, 108, 224, 0.08)' 
-                } 
+                '&:hover': {
+                  backgroundColor: 'rgba(138, 108, 224, 0.08)'
+                }
               }}
             >
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton 
-              onClick={() => onDelete(pet.id)} 
+            <IconButton
+              onClick={() => onDelete(pet.id)}
               size="small"
-              sx={{ 
+              sx={{
                 color: '#F87171',
-                '&:hover': { 
-                  backgroundColor: 'rgba(248, 113, 113, 0.08)' 
-                } 
+                '&:hover': {
+                  backgroundColor: 'rgba(248, 113, 113, 0.08)'
+                }
               }}
             >
               <DeleteIcon fontSize="small" />
@@ -331,26 +331,28 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
           </Box>
         }
       />
-      
+
       {/* Pet Image */}
-      {pet.image ? (
-        <ImageContainer>
-          <img 
-            src={pet.image} 
-            alt={pet.name} 
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover'
-            }} 
-          />
-        </ImageContainer>
-      ) : (
-        <PlaceholderImage>
-          <PetsIcon sx={{ fontSize: 60, color: '#C4B3F6' }} />
-        </PlaceholderImage>
-      )}
-      
+      <div style={{ marginTop: '1rem' }}> {/* or paddingTop: '1rem' */}
+        {pet.image ? (
+          <ImageContainer>
+            <img
+              src={pet.image}
+              alt={pet.name}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          </ImageContainer>
+        ) : (
+          <PlaceholderImage>
+            <PetsIcon sx={{ fontSize: 60, color: '#C4B3F6' }} />
+          </PlaceholderImage>
+        )}
+      </div>
+
       <CardContent sx={{ pt: 0, flexGrow: 1, px: 2 }}>
         <InfoGrid container spacing={2}>
           {pet.gender && (
@@ -396,11 +398,12 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
             </SectionTitle>
           </AccordionSummary>
           <AccordionDetails>
-            <Box sx={{ 
-              background: 'linear-gradient(135deg, #F6F2FF 0%, #EAE4FF 100%)', 
-              p: 1.5, 
+            <Box sx={{
+              background: 'linear-gradient(135deg, #F6F2FF 0%, #EAE4FF 100%)',
+              p: 1.5,
               borderRadius: 2,
               mb: 1,
+
               border: '1px solid rgba(210, 199, 249, 0.6)'
             }}>
               {pet.medical?.conditions ? (
@@ -442,8 +445,8 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
         {/* Vaccination accordion */}
         <StyledAccordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#8A6CE0' }} />}>
-            <VaccineBadge 
-              badgeContent={pet.vaccinations?.length || 0} 
+            <VaccineBadge
+              badgeContent={pet.vaccinations?.length || 0}
             >
               <SectionTitle>
                 <VaccinesIcon /> Vaccination Records
@@ -451,21 +454,21 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
             </VaccineBadge>
           </AccordionSummary>
           <AccordionDetails>
-            <Box sx={{ 
-              background: 'linear-gradient(135deg, #F6F2FF 0%, #EAE4FF 100%)', 
-              p: 1.5, 
+            <Box sx={{
+              background: 'linear-gradient(135deg, #F6F2FF 0%, #EAE4FF 100%)',
+              p: 1.5,
               borderRadius: 2,
               border: '1px solid rgba(210, 199, 249, 0.6)'
             }}>
               {pet.vaccinations && pet.vaccinations.length > 0 ? (
                 <Box>
                   {pet.vaccinations.map((vaccination, index) => (
-                    <Box 
-                      key={index} 
-                      sx={{ 
+                    <Box
+                      key={index}
+                      sx={{
                         mb: index < pet.vaccinations.length - 1 ? 1.5 : 0,
                         pb: index < pet.vaccinations.length - 1 ? 1.5 : 0,
-                        borderBottom: index < pet.vaccinations.length - 1 ? '1px solid #EAE4FF' : 'none' 
+                        borderBottom: index < pet.vaccinations.length - 1 ? '1px solid #EAE4FF' : 'none'
                       }}
                     >
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
@@ -500,13 +503,13 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
           </AccordionDetails>
         </StyledAccordion>
       </CardContent>
-      
+
       <StyledCardActions sx={{ justifyContent: 'space-between' }}>
         <FormControlLabel
           control={
             <Switch
               checked={pet.availableForMating || false}
-              onChange={(e) => onEdit({...pet, availableForMating: e.target.checked})}
+              onChange={(e) => onEdit({ ...pet, availableForMating: e.target.checked })}
               sx={{
                 '& .MuiSwitch-switchBase.Mui-checked': {
                   color: '#FF7BAC',
@@ -527,7 +530,7 @@ const PetCard = ({ pet, onEdit, onDelete }) => {
           }
         />
         <EditButton
-          size="small" 
+          size="small"
           onClick={() => onEdit(pet)}
           startIcon={<EditIcon />}
           variant="contained"

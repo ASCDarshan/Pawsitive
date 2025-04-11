@@ -1,16 +1,16 @@
 // Profile.jsx - Redesigned component
 import React, { useEffect, useState } from "react";
-import { 
-  Box, 
-  Typography, 
-  Divider, 
-  IconButton, 
-  Grid, 
-  Fab, 
-  Tabs, 
-  Tab, 
-  Paper, 
-  Badge, 
+import {
+  Box,
+  Typography,
+  Divider,
+  IconButton,
+  Grid,
+  Fab,
+  Tabs,
+  Tab,
+  Paper,
+  Badge,
   Button,
   Avatar,
   Card,
@@ -31,7 +31,14 @@ import {
   TextField,
 } from "@mui/material";
 import { auth, db, database } from "../../firebase";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { ref, set, get, update, remove, push } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -54,8 +61,6 @@ import MatingRequestDialog from "./components/MatingRequestDialog";
 import MessageDialog from "./components/MessageDialog";
 import ConversationsList from "./components/ConversationsList";
 
-
-
 // Tab Panel component
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -68,11 +73,7 @@ function TabPanel(props) {
       aria-labelledby={`profile-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ py: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -89,79 +90,76 @@ const Profile = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [currentMessage, setCurrentMessage] = useState({
-    text: '',
-    recipientId: '',
-    petId: '',
-    receiverPetId: ''
+    text: "",
+    recipientId: "",
+    petId: "",
+    receiverPetId: "",
   });
-  
+
   const [currentPet, setCurrentPet] = useState({
-    id: '',
-    name: '',
-    type: 'dog',
-    breed: '',
-    gender: '',
-    age: '',
-    weight: '',
-    color: '',
-    description: '',
-    image: '',
+    id: "",
+    name: "",
+    type: "dog",
+    breed: "",
+    gender: "",
+    age: "",
+    weight: "",
+    color: "",
+    description: "",
+    image: "",
     availableForMating: false,
     medical: {
       conditions: [],
       allergies: [],
-      medications: ''
+      medications: "",
     },
-    vaccinations: []
+    vaccinations: [],
   });
-  
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [openVaccinationDialog, setOpenVaccinationDialog] = useState(false);
-  const [openMatingRequestDialog, setOpenMatingRequestDialog] = useState(false);
-  
+
   const [currentVaccination, setCurrentVaccination] = useState({
-    name: '',
+    name: "",
     date: null,
     nextDue: null,
-    notes: ''
+    notes: "",
   });
-  
+
   const [vaccinationEditIndex, setVaccinationEditIndex] = useState(-1);
   const navigate = useNavigate();
 
-  // Fetch liked resources from Firestore
   const fetchLikedResources = async () => {
     if (!user) return;
 
     try {
-      // First try to get from Realtime Database
       const userLikesRef = ref(database, `userLikes/${user.uid}`);
       const snapshot = await get(userLikesRef);
-      
+
       if (snapshot.exists()) {
         const likedResourceIds = Object.keys(snapshot.val());
         const likedResourcesArray = [];
-        
+
         for (const resourceId of likedResourceIds) {
-          // Try to get resource from Realtime Database first
           const resourceRef = ref(database, `resources/${resourceId}`);
           const resourceSnapshot = await get(resourceRef);
-          
+
           if (resourceSnapshot.exists()) {
             const resourceData = resourceSnapshot.val();
             likedResourcesArray.push({
               id: resourceId,
-              ...resourceData
+              ...resourceData,
             });
           } else {
-            // Fallback to Firestore
             try {
-              const resourceDoc = await getDoc(doc(db, "resources", resourceId));
+              const resourceDoc = await getDoc(
+                doc(db, "resources", resourceId)
+              );
               if (resourceDoc.exists()) {
                 likedResourcesArray.push({
                   id: resourceId,
-                  ...resourceDoc.data()
+                  ...resourceDoc.data(),
                 });
               }
             } catch (err) {
@@ -169,10 +167,9 @@ const Profile = () => {
             }
           }
         }
-        
+
         setLikedResources(likedResourcesArray);
       } else {
-        // Fallback to old Firestore method
         const resourcesCollection = collection(db, "resources");
         const q = query(resourcesCollection);
         const querySnapshot = await getDocs(q);
@@ -203,46 +200,42 @@ const Profile = () => {
     }
   };
 
-  // Fetch comments
   const fetchUserComments = async () => {
     if (!user) return;
 
     try {
-      // Try to get from Realtime Database first
       const userCommentsRef = ref(database, `userComments/${user.uid}`);
       const snapshot = await get(userCommentsRef);
-      
+
       if (snapshot.exists()) {
         const commentsData = snapshot.val();
         const commentsArray = [];
-        
+
         for (const resourceId in commentsData) {
           for (const commentId in commentsData[resourceId]) {
             const comment = commentsData[resourceId][commentId];
-            
-            // Get resource name
+
             try {
               const resourceRef = ref(database, `resources/${resourceId}`);
               const resourceSnapshot = await get(resourceRef);
-              const resourceName = resourceSnapshot.exists() 
-                ? resourceSnapshot.val().name 
+              const resourceName = resourceSnapshot.exists()
+                ? resourceSnapshot.val().name
                 : "Unknown Resource";
-              
+
               commentsArray.push({
                 id: commentId,
                 resourceId,
                 resourceName,
-                ...comment
+                ...comment,
               });
             } catch (err) {
               console.warn("Error fetching resource for comment:", err);
             }
           }
         }
-        
+
         setComments(commentsArray);
       } else {
-        // Fallback to Firestore method
         const commentsArray = [];
         const resourcesCollection = collection(db, "resources");
         const q = query(resourcesCollection);
@@ -277,21 +270,20 @@ const Profile = () => {
     }
   };
 
-  // Fetch user's pets
   const fetchUserPets = async () => {
     if (!user) return;
 
     try {
       const userPetsRef = ref(database, `userPets/${user.uid}`);
       const snapshot = await get(userPetsRef);
-      
+
       if (snapshot.exists()) {
         const petsData = snapshot.val();
-        const petsArray = Object.keys(petsData).map(petId => ({
+        const petsArray = Object.keys(petsData).map((petId) => ({
           id: petId,
-          ...petsData[petId]
+          ...petsData[petId],
         }));
-        
+
         setPets(petsArray);
       } else {
         setPets([]);
@@ -301,94 +293,113 @@ const Profile = () => {
     }
   };
 
-  // Fetch mating requests
   const fetchMatingRequests = async () => {
     if (!user) return;
 
     try {
-      const incomingRequestsRef = ref(database, `matingRequests/received/${user.uid}`);
+      const incomingRequestsRef = ref(
+        database,
+        `matingRequests/received/${user.uid}`
+      );
       const sentRequestsRef = ref(database, `matingRequests/sent/${user.uid}`);
-      
+
       const incomingSnapshot = await get(incomingRequestsRef);
       const sentSnapshot = await get(sentRequestsRef);
-      
+
       const requests = [];
-      
-      // Process incoming requests
+
       if (incomingSnapshot.exists()) {
         const incomingData = incomingSnapshot.val();
-        
+
         for (const requestId in incomingData) {
           const request = incomingData[requestId];
-          
-          // Get sender user details
+
           const senderUserRef = ref(database, `users/${request.senderId}`);
           const senderSnapshot = await get(senderUserRef);
-          const senderData = senderSnapshot.exists() ? senderSnapshot.val() : { displayName: "Unknown User" };
-          
-          // Get sender pet details
-          const senderPetRef = ref(database, `userPets/${request.senderId}/${request.senderPetId}`);
+          const senderData = senderSnapshot.exists()
+            ? senderSnapshot.val()
+            : { displayName: "Unknown User" };
+
+          const senderPetRef = ref(
+            database,
+            `userPets/${request.senderId}/${request.senderPetId}`
+          );
           const senderPetSnapshot = await get(senderPetRef);
-          const senderPetData = senderPetSnapshot.exists() ? senderPetSnapshot.val() : { name: "Unknown Pet" };
-          
-          // Get receiver pet details
-          const receiverPetRef = ref(database, `userPets/${user.uid}/${request.receiverPetId}`);
+          const senderPetData = senderPetSnapshot.exists()
+            ? senderPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
+          const receiverPetRef = ref(
+            database,
+            `userPets/${user.uid}/${request.receiverPetId}`
+          );
           const receiverPetSnapshot = await get(receiverPetRef);
-          const receiverPetData = receiverPetSnapshot.exists() ? receiverPetSnapshot.val() : { name: "Unknown Pet" };
-          
+          const receiverPetData = receiverPetSnapshot.exists()
+            ? receiverPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
           requests.push({
             id: requestId,
             ...request,
-            direction: 'incoming',
+            direction: "incoming",
             senderName: senderData.displayName,
             senderPetName: senderPetData.name,
             senderPetImage: senderPetData.image,
             senderPetBreed: senderPetData.breed,
             receiverPetName: receiverPetData.name,
-            receiverPetImage: receiverPetData.image
+            receiverPetImage: receiverPetData.image,
           });
         }
       }
-      
-      // Process sent requests
+
       if (sentSnapshot.exists()) {
         const sentData = sentSnapshot.val();
-        
+
         for (const requestId in sentData) {
           const request = sentData[requestId];
-          
-          // Get receiver user details
+
           const receiverUserRef = ref(database, `users/${request.receiverId}`);
           const receiverSnapshot = await get(receiverUserRef);
-          const receiverData = receiverSnapshot.exists() ? receiverSnapshot.val() : { displayName: "Unknown User" };
-          
-          // Get sender pet details (current user's pet)
-          const senderPetRef = ref(database, `userPets/${user.uid}/${request.senderPetId}`);
+          const receiverData = receiverSnapshot.exists()
+            ? receiverSnapshot.val()
+            : { displayName: "Unknown User" };
+
+          const senderPetRef = ref(
+            database,
+            `userPets/${user.uid}/${request.senderPetId}`
+          );
           const senderPetSnapshot = await get(senderPetRef);
-          const senderPetData = senderPetSnapshot.exists() ? senderPetSnapshot.val() : { name: "Unknown Pet" };
-          
+          const senderPetData = senderPetSnapshot.exists()
+            ? senderPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
           // Get receiver pet details
-          const receiverPetRef = ref(database, `userPets/${request.receiverId}/${request.receiverPetId}`);
+          const receiverPetRef = ref(
+            database,
+            `userPets/${request.receiverId}/${request.receiverPetId}`
+          );
           const receiverPetSnapshot = await get(receiverPetRef);
-          const receiverPetData = receiverPetSnapshot.exists() ? receiverPetSnapshot.val() : { name: "Unknown Pet" };
-          
+          const receiverPetData = receiverPetSnapshot.exists()
+            ? receiverPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
           requests.push({
             id: requestId,
             ...request,
-            direction: 'outgoing',
+            direction: "outgoing",
             receiverName: receiverData.displayName,
             senderPetName: senderPetData.name,
             senderPetImage: senderPetData.image,
             receiverPetName: receiverPetData.name,
             receiverPetImage: receiverPetData.image,
-            receiverPetBreed: receiverPetData.breed
+            receiverPetBreed: receiverPetData.breed,
           });
         }
       }
-      
+
       // Sort by date (newest first)
       requests.sort((a, b) => b.createdAt - a.createdAt);
-      
+
       setMatingRequests(requests);
     } catch (error) {
       console.error("Error fetching mating requests:", error);
@@ -409,22 +420,22 @@ const Profile = () => {
   const handleAddPet = () => {
     setCurrentPet({
       id: Date.now().toString(),
-      name: '',
-      type: 'dog',
-      breed: '',
-      gender: '',
-      age: '',
-      weight: '',
-      color: '',
-      description: '',
-      image: '',
+      name: "",
+      type: "dog",
+      breed: "",
+      gender: "",
+      age: "",
+      weight: "",
+      color: "",
+      description: "",
+      image: "",
       availableForMating: false,
       medical: {
         conditions: [],
         allergies: [],
-        medications: ''
+        medications: "",
       },
-      vaccinations: []
+      vaccinations: [],
     });
     setIsEditMode(false);
     setOpenPetDialog(true);
@@ -432,7 +443,7 @@ const Profile = () => {
 
   // Open dialog to edit an existing pet
   const handleEditPet = (pet) => {
-    setCurrentPet({...pet});
+    setCurrentPet({ ...pet });
     setIsEditMode(true);
     setOpenPetDialog(true);
   };
@@ -444,14 +455,16 @@ const Profile = () => {
     try {
       const petRef = ref(database, `userPets/${user.uid}/${currentPet.id}`);
       await set(petRef, currentPet);
-      
+
       // Update local state
       if (isEditMode) {
-        setPets(pets.map(pet => pet.id === currentPet.id ? currentPet : pet));
+        setPets(
+          pets.map((pet) => (pet.id === currentPet.id ? currentPet : pet))
+        );
       } else {
         setPets([...pets, currentPet]);
       }
-      
+
       setOpenPetDialog(false);
     } catch (error) {
       console.error("Error saving pet:", error);
@@ -461,14 +474,15 @@ const Profile = () => {
 
   // Delete a pet
   const handleDeletePet = async (petId) => {
-    if (!user || !window.confirm("Are you sure you want to delete this pet?")) return;
+    if (!user || !window.confirm("Are you sure you want to delete this pet?"))
+      return;
 
     try {
       const petRef = ref(database, `userPets/${user.uid}/${petId}`);
       await remove(petRef);
-      
+
       // Update local state
-      setPets(pets.filter(pet => pet.id !== petId));
+      setPets(pets.filter((pet) => pet.id !== petId));
     } catch (error) {
       console.error("Error deleting pet:", error);
       alert("Failed to delete pet. Please try again.");
@@ -478,12 +492,12 @@ const Profile = () => {
   // Handle vaccination dialog
   const handleAddVaccination = () => {
     console.log("Adding vaccination for pet type:", currentPet.type);
-    
+
     setCurrentVaccination({
-      name: '',
+      name: "",
       date: null,
       nextDue: null,
-      notes: ''
+      notes: "",
     });
     setVaccinationEditIndex(-1);
     setOpenVaccinationDialog(true);
@@ -491,7 +505,7 @@ const Profile = () => {
 
   // Edit existing vaccination
   const handleEditVaccination = (vaccination, index) => {
-    setCurrentVaccination({...vaccination});
+    setCurrentVaccination({ ...vaccination });
     setVaccinationEditIndex(index);
     setOpenVaccinationDialog(true);
   };
@@ -499,10 +513,10 @@ const Profile = () => {
   // Save vaccination
   const handleSaveVaccination = () => {
     if (!currentVaccination.name || !currentVaccination.date) return;
-    
-    const updatedPet = {...currentPet};
+
+    const updatedPet = { ...currentPet };
     updatedPet.vaccinations = updatedPet.vaccinations || [];
-    
+
     if (vaccinationEditIndex >= 0) {
       // Edit existing vaccination
       updatedPet.vaccinations[vaccinationEditIndex] = currentVaccination;
@@ -510,14 +524,14 @@ const Profile = () => {
       // Add new vaccination
       updatedPet.vaccinations.push(currentVaccination);
     }
-    
+
     setCurrentPet(updatedPet);
     setOpenVaccinationDialog(false);
   };
 
   // Delete vaccination
   const handleDeleteVaccination = (index) => {
-    const updatedPet = {...currentPet};
+    const updatedPet = { ...currentPet };
     updatedPet.vaccinations.splice(index, 1);
     setCurrentPet(updatedPet);
   };
@@ -533,47 +547,54 @@ const Profile = () => {
     setAnchorEl(null);
   };
 
-
   const handleOpenConversationFromList = (conversation) => {
     setCurrentMessage({
-      text: '',
+      text: "",
       recipientId: conversation.otherParticipantId,
       recipientName: conversation.otherParticipantName,
       senderPet: conversation.senderPet,
       receiverPet: conversation.receiverPet,
       matingRequestId: conversation.matingRequestId,
-      conversationId: conversation.id
+      conversationId: conversation.id,
     });
-    
+
     setOpenMessageDialog(true);
   };
 
   // Accept mating request
   const handleAcceptRequest = async () => {
     if (!selectedRequest) return;
-    
+
     try {
       // Update request status in database
-      const requestRef = ref(database, `matingRequests/received/${user.uid}/${selectedRequest.id}`);
+      const requestRef = ref(
+        database,
+        `matingRequests/received/${user.uid}/${selectedRequest.id}`
+      );
       await update(requestRef, {
-        status: 'accepted',
-        updatedAt: Date.now()
+        status: "accepted",
+        updatedAt: Date.now(),
       });
-      
+
       // Update in sender's sent requests
-      const senderRequestRef = ref(database, `matingRequests/sent/${selectedRequest.senderId}/${selectedRequest.id}`);
+      const senderRequestRef = ref(
+        database,
+        `matingRequests/sent/${selectedRequest.senderId}/${selectedRequest.id}`
+      );
       await update(senderRequestRef, {
-        status: 'accepted',
-        updatedAt: Date.now()
+        status: "accepted",
+        updatedAt: Date.now(),
       });
-      
+
       // Update local state
-      setMatingRequests(matingRequests.map(req => 
-        req.id === selectedRequest.id 
-          ? {...req, status: 'accepted', updatedAt: Date.now()} 
-          : req
-      ));
-      
+      setMatingRequests(
+        matingRequests.map((req) =>
+          req.id === selectedRequest.id
+            ? { ...req, status: "accepted", updatedAt: Date.now() }
+            : req
+        )
+      );
+
       // Close menu
       handleRequestMenuClose();
     } catch (error) {
@@ -585,29 +606,37 @@ const Profile = () => {
   // Decline mating request
   const handleDeclineRequest = async () => {
     if (!selectedRequest) return;
-    
+
     try {
       // Update request status in database
-      const requestRef = ref(database, `matingRequests/received/${user.uid}/${selectedRequest.id}`);
+      const requestRef = ref(
+        database,
+        `matingRequests/received/${user.uid}/${selectedRequest.id}`
+      );
       await update(requestRef, {
-        status: 'declined',
-        updatedAt: Date.now()
+        status: "declined",
+        updatedAt: Date.now(),
       });
-      
+
       // Update in sender's sent requests
-      const senderRequestRef = ref(database, `matingRequests/sent/${selectedRequest.senderId}/${selectedRequest.id}`);
+      const senderRequestRef = ref(
+        database,
+        `matingRequests/sent/${selectedRequest.senderId}/${selectedRequest.id}`
+      );
       await update(senderRequestRef, {
-        status: 'declined',
-        updatedAt: Date.now()
+        status: "declined",
+        updatedAt: Date.now(),
       });
-      
+
       // Update local state
-      setMatingRequests(matingRequests.map(req => 
-        req.id === selectedRequest.id 
-          ? {...req, status: 'declined', updatedAt: Date.now()} 
-          : req
-      ));
-      
+      setMatingRequests(
+        matingRequests.map((req) =>
+          req.id === selectedRequest.id
+            ? { ...req, status: "declined", updatedAt: Date.now() }
+            : req
+        )
+      );
+
       // Close menu
       handleRequestMenuClose();
     } catch (error) {
@@ -621,73 +650,98 @@ const Profile = () => {
   const handleOpenMessageDialog = (request) => {
     // Create a consistent conversationId based on the mating request
     const conversationId = `mating_${request.id}`;
-    
+
     // Find the sender pet from your pets array
-    const senderPet = pets.find(pet => 
-      pet.id === (request.direction === 'incoming' ? request.receiverPetId : request.senderPetId)
+    const senderPet = pets.find(
+      (pet) =>
+        pet.id ===
+        (request.direction === "incoming"
+          ? request.receiverPetId
+          : request.senderPetId)
     );
-    
+
     setCurrentMessage({
-      text: '',
-      recipientId: request.direction === 'incoming' ? request.senderId : request.receiverId,
-      recipientName: request.direction === 'incoming' ? request.senderName : request.receiverName,
-      petId: request.direction === 'incoming' ? request.receiverPetId : request.senderPetId,
-      receiverPetId: request.direction === 'incoming' ? request.senderPetId : request.receiverPetId,
+      text: "",
+      recipientId:
+        request.direction === "incoming"
+          ? request.senderId
+          : request.receiverId,
+      recipientName:
+        request.direction === "incoming"
+          ? request.senderName
+          : request.receiverName,
+      petId:
+        request.direction === "incoming"
+          ? request.receiverPetId
+          : request.senderPetId,
+      receiverPetId:
+        request.direction === "incoming"
+          ? request.senderPetId
+          : request.receiverPetId,
       matingRequestId: request.id,
       conversationId: conversationId,
       senderPet: senderPet,
       receiverPet: {
-        name: request.direction === 'incoming' ? request.senderPetName : request.receiverPetName,
-        image: request.direction === 'incoming' ? request.senderPetImage : request.receiverPetImage
-      }
+        name:
+          request.direction === "incoming"
+            ? request.senderPetName
+            : request.receiverPetName,
+        image:
+          request.direction === "incoming"
+            ? request.senderPetImage
+            : request.receiverPetImage,
+      },
     });
-    
+
     setOpenMessageDialog(true);
   };
 
   // Send message
   const handleSendMessage = async () => {
     if (!currentMessage.text || !currentMessage.recipientId) return;
-    
+
     try {
       // Create conversation if it doesn't exist
       const conversationId = `${user.uid}_${currentMessage.recipientId}_${currentMessage.matingRequestId}`;
       const conversationRef = ref(database, `conversations/${conversationId}`);
-      
+
       // Create message
-      const messageRef = ref(database, `conversations/${conversationId}/messages`);
+      const messageRef = ref(
+        database,
+        `conversations/${conversationId}/messages`
+      );
       const newMessageRef = push(messageRef);
-      
+
       await set(newMessageRef, {
         text: currentMessage.text,
         senderId: user.uid,
         senderName: user.displayName,
         timestamp: Date.now(),
         petId: currentMessage.petId,
-        receiverPetId: currentMessage.receiverPetId
+        receiverPetId: currentMessage.receiverPetId,
       });
-      
+
       // Update conversation metadata
       await update(conversationRef, {
         lastMessageText: currentMessage.text,
         lastMessageTimestamp: Date.now(),
         participants: {
           [user.uid]: true,
-          [currentMessage.recipientId]: true
+          [currentMessage.recipientId]: true,
         },
-        matingRequestId: currentMessage.matingRequestId
+        matingRequestId: currentMessage.matingRequestId,
       });
-      
+
       // Close dialog
       setOpenMessageDialog(false);
-      
+
       // Reset message
       setCurrentMessage({
-        text: '',
-        recipientId: '',
-        petId: '',
-        receiverPetId: '',
-        matingRequestId: ''
+        text: "",
+        recipientId: "",
+        petId: "",
+        receiverPetId: "",
+        matingRequestId: "",
       });
     } catch (error) {
       console.error("Error sending message:", error);
@@ -706,19 +760,21 @@ const Profile = () => {
 
   // Count pending mating requests
   const pendingRequestsCount = matingRequests.filter(
-    req => req.direction === 'incoming' && req.status === 'pending'
+    (req) => req.direction === "incoming" && req.status === "pending"
   ).length;
 
   return (
     <Container maxWidth="lg">
       <Box sx={{ padding: { xs: 2, sm: 3 }, pb: 8 }}>
         {/* Header */}
-        <Box sx={{ 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "space-between", 
-          mb: 3 
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 3,
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBackIcon />
@@ -728,85 +784,85 @@ const Profile = () => {
             </Typography>
           </Box>
           <Badge badgeContent={pendingRequestsCount} color="error">
-            <Chip 
-              icon={<NotificationsIcon />} 
+            <Chip
+              icon={<NotificationsIcon />}
               label={`${pendingRequestsCount} Pending Requests`}
               color={pendingRequestsCount > 0 ? "primary" : "default"}
               onClick={() => setProfileTabValue(2)}
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
+              sx={{ display: { xs: "none", sm: "flex" } }}
             />
           </Badge>
         </Box>
 
-        {/* User Info Section */}
-        <Paper 
-          elevation={2} 
-          sx={{ 
-            p: 3, 
-            mb: 3, 
+        <Paper
+          elevation={2}
+          sx={{
+            p: 3,
+            mb: 3,
             borderRadius: 2,
-            background: 'linear-gradient(145deg, #f9f5ff 0%, #e6f7ff 100%)'
+            background: "linear-gradient(145deg, #f9f5ff 0%, #e6f7ff 100%)",
           }}
         >
           <UserInfo user={user} />
         </Paper>
 
-        {/* Tabs Navigation */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-          <Tabs 
-            value={profileTabValue} 
-            onChange={handleProfileTabChange} 
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+          <Tabs
+            value={profileTabValue}
+            onChange={handleProfileTabChange}
             aria-label="profile tabs"
             variant="scrollable"
             scrollButtons="auto"
           >
             <Tab icon={<PetsIcon />} label="My Pets" id="profile-tab-0" />
             <Tab icon={<FavoriteIcon />} label="Resources" id="profile-tab-1" />
-            <Tab 
+            <Tab
               icon={
                 <Badge badgeContent={pendingRequestsCount} color="error">
                   <NotificationsIcon />
                 </Badge>
-              } 
-              label="Mating Requests" 
-              id="profile-tab-2" 
+              }
+              label="Mating Requests"
+              id="profile-tab-2"
             />
             <Tab icon={<MessageIcon />} label="Comments" id="profile-tab-3" />
           </Tabs>
-
-          
         </Box>
 
-        <TabPanel value={profileTabValue} index={3}> {/* Index 3 for Messages */}
-  <Box sx={{ 
-    display: "flex", 
-    alignItems: "center", 
-    justifyContent: "space-between", 
-    mb: 3 
-  }}>
-    <Typography variant="h5" fontWeight="medium">
-      Messages
-    </Typography>
-  </Box>
-  
-  <ConversationsList onOpenConversation={handleOpenConversationFromList} />
-</TabPanel>
+        <TabPanel value={profileTabValue} index={3}>
+          {" "}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 3,
+            }}
+          >
+            <Typography variant="h5" fontWeight="medium">
+              Messages
+            </Typography>
+          </Box>
+          <ConversationsList
+            onOpenConversation={handleOpenConversationFromList}
+          />
+        </TabPanel>
 
-
-        {/* My Pets Tab */}
         <TabPanel value={profileTabValue} index={0}>
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "space-between", 
-            mb: 3 
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 3,
+            }}
+          >
             <Typography variant="h5" fontWeight="medium">
               My Pets
             </Typography>
-            <Fab 
-              color="primary" 
-              size="medium" 
+            <Fab
+              color="primary"
+              size="medium"
               onClick={handleAddPet}
               aria-label="add pet"
               sx={{ boxShadow: 3 }}
@@ -819,24 +875,24 @@ const Profile = () => {
             <Grid container spacing={3}>
               {pets.map((pet) => (
                 <Grid item xs={12} sm={6} md={4} key={pet.id}>
-                  <Card 
-                    sx={{ 
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      transition: 'transform 0.3s, box-shadow 0.3s',
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      transition: "transform 0.3s, box-shadow 0.3s",
                       borderRadius: 2,
-                      overflow: 'hidden',
+                      overflow: "hidden",
                       boxShadow: 2,
-                      '&:hover': {
-                        transform: 'translateY(-8px)',
-                        boxShadow: 4
-                      }
+                      "&:hover": {
+                        transform: "translateY(-8px)",
+                        boxShadow: 4,
+                      },
                     }}
                   >
-                    <PetCard 
-                      pet={pet} 
-                      onEdit={handleEditPet} 
+                    <PetCard
+                      pet={pet}
+                      onEdit={handleEditPet}
                       onDelete={handleDeletePet}
                     />
                   </Card>
@@ -844,23 +900,28 @@ const Profile = () => {
               ))}
             </Grid>
           ) : (
-            <Paper 
-              elevation={1} 
-              sx={{ 
-                p: 4, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center',
+            <Paper
+              elevation={1}
+              sx={{
+                p: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
                 borderRadius: 2,
-                backgroundColor: '#f5f5f5' 
+                backgroundColor: "#f5f5f5",
               }}
             >
-              <PetsIcon sx={{ fontSize: 48, color: '#aaa', mb: 2 }} />
+              <PetsIcon sx={{ fontSize: 48, color: "#aaa", mb: 2 }} />
               <Typography variant="h6" sx={{ mb: 2 }}>
                 You haven't added any pets yet
               </Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 3, textAlign: 'center' }}>
-                Add your pets to discover resources, find mating partners, and track their health.
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ mb: 3, textAlign: "center" }}
+              >
+                Add your pets to discover resources, find mating partners, and
+                track their health.
               </Typography>
               <Button
                 variant="contained"
@@ -882,12 +943,14 @@ const Profile = () => {
 
         {/* Mating Requests Tab */}
         <TabPanel value={profileTabValue} index={2}>
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "space-between", 
-            mb: 3 
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 3,
+            }}
+          >
             <Typography variant="h5" fontWeight="medium">
               Mating Requests
             </Typography>
@@ -897,49 +960,59 @@ const Profile = () => {
             <Grid container spacing={3}>
               {matingRequests.map((request) => (
                 <Grid item xs={12} sm={6} key={request.id}>
-                  <Card sx={{ 
-                    position: 'relative',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    boxShadow: 2,
-                    border: request.status === 'pending' && request.direction === 'incoming' 
-                      ? '2px solid #f50057' 
-                      : 'none'
-                  }}>
-                    {/* Status indicator */}
-                    <Box 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 10, 
-                        right: 10, 
+                  <Card
+                    sx={{
+                      position: "relative",
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      boxShadow: 2,
+                      border:
+                        request.status === "pending" &&
+                        request.direction === "incoming"
+                          ? "2px solid #f50057"
+                          : "none",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 10,
+                        right: 10,
                         zIndex: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        backgroundColor: 
-                          request.status === 'accepted' ? 'success.main' :
-                          request.status === 'declined' ? 'error.main' :
-                          request.direction === 'incoming' ? 'warning.main' : 'info.main',
-                        color: 'white',
+                        display: "flex",
+                        alignItems: "center",
+                        backgroundColor:
+                          request.status === "accepted"
+                            ? "success.main"
+                            : request.status === "declined"
+                            ? "error.main"
+                            : request.direction === "incoming"
+                            ? "warning.main"
+                            : "info.main",
+                        color: "white",
                         px: 1,
                         py: 0.5,
                         borderRadius: 5,
-                        fontSize: '0.75rem',
-                        fontWeight: 'bold'
+                        fontSize: "0.75rem",
+                        fontWeight: "bold",
                       }}
                     >
-                      {request.status === 'accepted' ? (
+                      {request.status === "accepted" ? (
                         <>
                           <CheckCircleIcon fontSize="small" sx={{ mr: 0.5 }} />
                           Accepted
                         </>
-                      ) : request.status === 'declined' ? (
+                      ) : request.status === "declined" ? (
                         <>
                           <CancelIcon fontSize="small" sx={{ mr: 0.5 }} />
                           Declined
                         </>
-                      ) : request.direction === 'incoming' ? (
+                      ) : request.direction === "incoming" ? (
                         <>
-                          <NotificationsIcon fontSize="small" sx={{ mr: 0.5 }} />
+                          <NotificationsIcon
+                            fontSize="small"
+                            sx={{ mr: 0.5 }}
+                          />
                           Pending
                         </>
                       ) : (
@@ -949,155 +1022,198 @@ const Profile = () => {
                         </>
                       )}
                     </Box>
-                    
+
                     {/* Direction indicator */}
-                    <Box 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 10, 
-                        left: 10, 
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 10,
+                        left: 10,
                         zIndex: 1,
-                        backgroundColor: request.direction === 'incoming' ? '#304ffe' : '#00bfa5',
-                        color: 'white',
+                        backgroundColor:
+                          request.direction === "incoming"
+                            ? "#304ffe"
+                            : "#00bfa5",
+                        color: "white",
                         px: 1,
                         py: 0.5,
                         borderRadius: 5,
-                        fontSize: '0.75rem',
-                        fontWeight: 'bold',
-                        display: 'flex',
-                        alignItems: 'center'
+                        fontSize: "0.75rem",
+                        fontWeight: "bold",
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
-                      {request.direction === 'incoming' ? 'Received' : 'Sent'}
+                      {request.direction === "incoming" ? "Received" : "Sent"}
                     </Box>
-                    
-                    <Box sx={{ display: 'flex', p: 0 }}>
+
+                    <Box sx={{ display: "flex", p: 0 }}>
                       {/* Pet images */}
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        p: 2,
-                        width: '40%',
-                        position: 'relative'
-                      }}>
-                        <Box sx={{ position: 'relative', width: '100%', height: 120 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          p: 2,
+                          width: "40%",
+                          position: "relative",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            position: "relative",
+                            width: "100%",
+                            height: 120,
+                          }}
+                        >
                           {/* Left pet (requester) */}
                           <Avatar
-                            src={request.direction === 'incoming' ? request.senderPetImage : request.senderPetImage}
-                            alt={request.direction === 'incoming' ? request.senderPetName : request.senderPetName}
-                            sx={{ 
-                              width: 80, 
-                              height: 80, 
-                              position: 'absolute',
+                            src={
+                              request.direction === "incoming"
+                                ? request.senderPetImage
+                                : request.senderPetImage
+                            }
+                            alt={
+                              request.direction === "incoming"
+                                ? request.senderPetName
+                                : request.senderPetName
+                            }
+                            sx={{
+                              width: 80,
+                              height: 80,
+                              position: "absolute",
                               top: 10,
                               left: 10,
-                              border: '3px solid #fff',
-                              boxShadow: 2
+                              border: "3px solid #fff",
+                              boxShadow: 2,
                             }}
                           />
-                          
+
                           {/* Right pet (requested) */}
                           <Avatar
-                            src={request.direction === 'incoming' ? request.receiverPetImage : request.receiverPetImage}
-                            alt={request.direction === 'incoming' ? request.receiverPetName : request.receiverPetName}
-                            sx={{ 
-                              width: 80, 
-                              height: 80, 
-                              position: 'absolute',
+                            src={
+                              request.direction === "incoming"
+                                ? request.receiverPetImage
+                                : request.receiverPetImage
+                            }
+                            alt={
+                              request.direction === "incoming"
+                                ? request.receiverPetName
+                                : request.receiverPetName
+                            }
+                            sx={{
+                              width: 80,
+                              height: 80,
+                              position: "absolute",
                               top: 40,
                               right: 10,
-                              border: '3px solid #fff',
-                              boxShadow: 2
+                              border: "3px solid #fff",
+                              boxShadow: 2,
                             }}
                           />
-                          
+
                           {/* Heart icon in middle */}
-                          <FavoriteIcon 
-                            sx={{ 
-                              position: 'absolute',
+                          <FavoriteIcon
+                            sx={{
+                              position: "absolute",
                               top: 40,
-                              left: 'calc(50% - 12px)',
-                              color: '#f50057',
+                              left: "calc(50% - 12px)",
+                              color: "#f50057",
                               fontSize: 24,
                               zIndex: 1,
-                              backgroundColor: 'white',
-                              borderRadius: '50%',
-                              padding: '2px'
+                              backgroundColor: "white",
+                              borderRadius: "50%",
+                              padding: "2px",
                             }}
                           />
                         </Box>
                       </Box>
-                      
+
                       {/* Request details */}
-                      <CardContent sx={{ width: '60%' }}>
+                      <CardContent sx={{ width: "60%" }}>
                         <Typography variant="h6" component="div" sx={{ mb: 1 }}>
-                          {request.direction === 'incoming'
+                          {request.direction === "incoming"
                             ? `${request.senderPetName} ➔ ${request.receiverPetName}`
-                            : `${request.senderPetName} ➔ ${request.receiverPetName}`
-                          }
+                            : `${request.senderPetName} ➔ ${request.receiverPetName}`}
                         </Typography>
-                        
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          <strong>From:</strong> {request.direction === 'incoming' 
-                            ? request.senderName 
-                            : user.displayName
-                          }
+
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          <strong>From:</strong>{" "}
+                          {request.direction === "incoming"
+                            ? request.senderName
+                            : user.displayName}
                         </Typography>
-                        
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          <strong>To:</strong> {request.direction === 'incoming' 
+
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          <strong>To:</strong>{" "}
+                          {request.direction === "incoming"
                             ? user.displayName
-                            : request.receiverName
-                          }
+                            : request.receiverName}
                         </Typography>
-                        
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          <strong>Date:</strong> {new Date(request.createdAt).toLocaleDateString()}
+
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          <strong>Date:</strong>{" "}
+                          {new Date(request.createdAt).toLocaleDateString()}
                         </Typography>
-                        
+
                         <Typography variant="body2" color="text.secondary">
-                          <strong>Message:</strong> {request.message || "No message"}
+                          <strong>Message:</strong>{" "}
+                          {request.message || "No message"}
                         </Typography>
                       </CardContent>
                     </Box>
-                    
+
                     {/* Actions */}
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      p: 2,
-                      borderTop: '1px solid rgba(0, 0, 0, 0.12)'
-                    }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        p: 2,
+                        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+                      }}
+                    >
                       {/* Left side buttons */}
                       <Box>
-                        {request.direction === 'incoming' && request.status === 'pending' && (
-                          <>
-                            <Button
-                              variant="contained"
-                              color="success"
-                              size="small"
-                              startIcon={<CheckCircleIcon />}
-                              onClick={handleAcceptRequest}
-                              sx={{ mr: 1 }}
-                            >
-                              Accept
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              size="small"
-                              startIcon={<CancelIcon />}
-                              onClick={handleDeclineRequest}
-                            >
-                              Decline
-                            </Button>
-                          </>
-                        )}
+                        {request.direction === "incoming" &&
+                          request.status === "pending" && (
+                            <>
+                              <Button
+                                variant="contained"
+                                color="success"
+                                size="small"
+                                startIcon={<CheckCircleIcon />}
+                                onClick={handleAcceptRequest}
+                                sx={{ mr: 1 }}
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                startIcon={<CancelIcon />}
+                                onClick={handleDeclineRequest}
+                              >
+                                Decline
+                              </Button>
+                            </>
+                          )}
                       </Box>
                       {/* Right side buttons */}
                       <Box>
-                        {request.status === 'accepted' && (
+                        {request.status === "accepted" && (
                           <Button
                             variant="contained"
                             color="primary"
@@ -1108,9 +1224,9 @@ const Profile = () => {
                             Message
                           </Button>
                         )}
-                        
-                        <IconButton 
-                          size="small" 
+
+                        <IconButton
+                          size="small"
                           onClick={(e) => handleRequestMenuOpen(e, request)}
                         >
                           <MoreVertIcon />
@@ -1122,29 +1238,34 @@ const Profile = () => {
               ))}
             </Grid>
           ) : (
-            <Paper 
-              elevation={1} 
-              sx={{ 
-                p: 4, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center',
+            <Paper
+              elevation={1}
+              sx={{
+                p: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
                 borderRadius: 2,
-                backgroundColor: '#f5f5f5' 
+                backgroundColor: "#f5f5f5",
               }}
             >
-              <FavoriteIcon sx={{ fontSize: 48, color: '#aaa', mb: 2 }} />
+              <FavoriteIcon sx={{ fontSize: 48, color: "#aaa", mb: 2 }} />
               <Typography variant="h6" sx={{ mb: 2 }}>
                 No mating requests yet
               </Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 3, textAlign: 'center' }}>
-                Visit "Find Nearby Mates" to browse available pets and send mating requests.
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ mb: 3, textAlign: "center" }}
+              >
+                Visit "Find Nearby Mates" to browse available pets and send
+                mating requests.
               </Typography>
               <Button
                 variant="contained"
                 color="primary"
                 startIcon={<FavoriteIcon />}
-                onClick={() => navigate('/nearby-mates')}
+                onClick={() => navigate("/nearby-mates")}
                 size="large"
               >
                 Find Mating Partners
@@ -1186,16 +1307,16 @@ const Profile = () => {
           petType={currentPet.type}
         />
 
-<MessageDialog 
-  open={openMessageDialog} 
-  onClose={() => setOpenMessageDialog(false)} 
-  conversationId={currentMessage.conversationId} 
-  recipientId={currentMessage.recipientId} 
-  recipientName={currentMessage.recipientName} 
-  senderPet={currentMessage.senderPet} 
-  receiverPet={currentMessage.receiverPet} 
-  matingRequestId={currentMessage.matingRequestId} 
-/>
+        <MessageDialog
+          open={openMessageDialog}
+          onClose={() => setOpenMessageDialog(false)}
+          conversationId={currentMessage.conversationId}
+          recipientId={currentMessage.recipientId}
+          recipientName={currentMessage.recipientName}
+          senderPet={currentMessage.senderPet}
+          receiverPet={currentMessage.receiverPet}
+          matingRequestId={currentMessage.matingRequestId}
+        />
 
         {/* Mating Request Options Menu */}
         <Menu
@@ -1203,24 +1324,25 @@ const Profile = () => {
           open={Boolean(anchorEl)}
           onClose={handleRequestMenuClose}
         >
-          {selectedRequest?.direction === 'incoming' && selectedRequest?.status === 'pending' && (
-            <>
-              <MenuItem onClick={handleAcceptRequest}>
-                <ListItemIcon>
-                  <CheckCircleIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Accept Request</ListItemText>
-              </MenuItem>
-              <MenuItem onClick={handleDeclineRequest}>
-                <ListItemIcon>
-                  <CancelIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Decline Request</ListItemText>
-              </MenuItem>
-            </>
-          )}
-          
-          {selectedRequest?.status === 'accepted' && (
+          {selectedRequest?.direction === "incoming" &&
+            selectedRequest?.status === "pending" && (
+              <>
+                <MenuItem onClick={handleAcceptRequest}>
+                  <ListItemIcon>
+                    <CheckCircleIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Accept Request</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleDeclineRequest}>
+                  <ListItemIcon>
+                    <CancelIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Decline Request</ListItemText>
+                </MenuItem>
+              </>
+            )}
+
+          {selectedRequest?.status === "accepted" && (
             <MenuItem onClick={() => handleOpenMessageDialog(selectedRequest)}>
               <ListItemIcon>
                 <ChatIcon fontSize="small" />
@@ -1229,8 +1351,6 @@ const Profile = () => {
             </MenuItem>
           )}
         </Menu>
-
-        
       </Box>
     </Container>
   );

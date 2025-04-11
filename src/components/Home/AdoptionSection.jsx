@@ -22,7 +22,7 @@ const AdoptionSection = () => {
       buttonText: "Find Adoptable Pets",
       route: "/adoption",
       gradientFrom: "pink-200",
-      gradientTo: "lavender-200",
+      gradientTo: "lavender-400",
       buttonGradientFrom: "lavender-600",
       buttonGradientTo: "lavender-700"
     },
@@ -32,17 +32,17 @@ const AdoptionSection = () => {
       description: "Need to find a new home for your pet? List them on our platform to connect with caring adopters.",
       buttonText: "Share Pet for Adoption",
       route: "/adoption/new",
-      gradientFrom: "lavender-200",
-      gradientTo: "pink-200",
-      buttonGradientFrom: "pink-500",
-      buttonGradientTo: "pink-600"
+      gradientFrom: "pink-200",
+      gradientTo: "lavender-400",
+      buttonGradientFrom: "lavender-600",
+      buttonGradientTo: "lavender-700"
     }
   ];
 
   return (
     <div className="bg-gradient-to-b from-pink-50 to-lavender-50 pt-28 pb-16 mt-8 rounded-t-[40px]">
       <div className="max-w-6xl mx-auto px-6">
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -54,8 +54,8 @@ const AdoptionSection = () => {
             Browse pets available for adoption or share your own pet for adoption. Help pets find their forever homes!
           </p>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
           initial="hidden"
           whileInView="visible"
