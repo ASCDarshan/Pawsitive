@@ -20,7 +20,7 @@ const AdoptionSection = () => {
       title: "Adopt a Pet",
       description: "Browse through available pets looking for a loving home. Find the perfect companion for your family.",
       buttonText: "Find Adoptable Pets",
-      route: "/adoption",
+      route: "/adopt-pets",
       gradientFrom: "pink-200",
       gradientTo: "lavender-400",
       buttonGradientFrom: "lavender-600",

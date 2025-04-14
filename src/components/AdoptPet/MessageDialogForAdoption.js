@@ -5,7 +5,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   TextField,
   Box,
   Typography,
@@ -24,15 +23,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import ImageIcon from "@mui/icons-material/Image";
-import { useLocation } from "react-router-dom";
 
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PetsIcon from "@mui/icons-material/Pets";
 import { ref, get, onValue, off, push, set, update } from "firebase/database";
-import { database, auth } from "../../../firebase";
+import { database, auth } from "../../firebase";
 
-const MessageDialog = ({
+const MessageDialogForAdoption = ({
   open,
   onClose,
   conversationId,
@@ -42,8 +40,6 @@ const MessageDialog = ({
   receiverPet,
   matingRequestId,
 }) => {
-  const location = useLocation();
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -303,20 +299,6 @@ const MessageDialog = ({
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
               {recipientName}
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
-                {senderPet?.name} + {receiverPet?.name}
-              </Typography>
-              {location.pathname !== "/adopt-pets" && (
-                <Chip
-                  icon={<FavoriteIcon fontSize="small" />}
-                  label="Mating Request"
-                  size="small"
-                  color="secondary"
-                  sx={{ height: 24 }}
-                />
-              )}
-            </Box>
           </Box>
         </Box>
         <IconButton
@@ -402,17 +384,6 @@ const MessageDialog = ({
               pb: 4,
             }}
           >
-            <Avatar
-              sx={{
-                width: 80,
-                height: 80,
-                backgroundColor: "rgba(233, 30, 99, 0.1)",
-                color: "#e91e63",
-                mb: 2,
-              }}
-            >
-              <FavoriteIcon sx={{ fontSize: 40 }} />
-            </Avatar>
             <Typography variant="h6" align="center" gutterBottom>
               Start Your Conversation
             </Typography>
@@ -422,40 +393,8 @@ const MessageDialog = ({
               align="center"
               sx={{ maxWidth: 400 }}
             >
-              This is the beginning of your conversation about the mating
-              request between {senderPet?.name} and {receiverPet?.name}.
+              This is the beginning of your conversation about the Adopt Pet.
             </Typography>
-            <Box
-              sx={{
-                mt: 4,
-                p: 2,
-                borderRadius: 2,
-                backgroundColor: "rgba(0,0,0,0.03)",
-                maxWidth: 450,
-              }}
-            >
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ fontStyle: "italic", textAlign: "center" }}
-              >
-                "Hello! I'm interested in arranging a meeting for our pets. When
-                would be a good time to discuss the details?"
-              </Typography>
-              <Button
-                variant="outlined"
-                color="primary"
-                size="small"
-                sx={{ mt: 2, display: "block", mx: "auto" }}
-                onClick={() => {
-                  setNewMessage(
-                    "Hello! I'm interested in arranging a meeting for our pets. When would be a good time to discuss the details?"
-                  );
-                }}
-              >
-                Use Suggestion
-              </Button>
-            </Box>
           </Box>
         ) : (
           <>
@@ -488,7 +427,7 @@ const MessageDialog = ({
                   const showAvatar =
                     idx === 0 ||
                     groupedMessages[date][idx - 1].senderId !==
-                    message.senderId;
+                      message.senderId;
 
                   return (
                     <Box
@@ -723,4 +662,4 @@ const MessageDialog = ({
   );
 };
 
-export default MessageDialog;
+export default MessageDialogForAdoption;

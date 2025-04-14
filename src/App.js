@@ -16,6 +16,8 @@ import ResourceDetail from "./components/Resources/ResourceDetail/ResourceDetail
 import NotFound from "./components/NotFound/NotFound";
 import NearbyMates from "./components/NearbyMates/NearbyMates";
 import ScrollToTop from "./UI/ScrollToTop";
+import AdoptPet from "./components/AdoptPet/AdoptPet";
+import PetDetail from "./components/NearbyMates/PetDetail";
 
 function App() {
   return (
@@ -95,6 +97,23 @@ function App() {
               element={
                 <ProtectedRoute>
                   <NearbyMates />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/pet-detail/:petId"
+              element={
+                <ProtectedRoute>
+                  <PetDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/adopt-pets"
+              element={
+                <ProtectedRoute>
+                  <AdoptPet />
                 </ProtectedRoute>
               }
             />

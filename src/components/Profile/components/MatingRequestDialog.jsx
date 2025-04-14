@@ -1,14 +1,14 @@
 // components/Profile/components/MatingRequestDialog.jsx
 import React, { useState } from 'react';
-import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
-  Button, 
-  TextField, 
-  Box, 
-  Typography, 
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box,
+  Typography,
   Avatar,
   Grid
 } from "@mui/material";
@@ -22,6 +22,7 @@ const MatingRequestDialog = ({
   receiverPet,
   receiverOwner
 }) => {
+  console.log(senderPet, receiverPet, receiverOwner);
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -37,8 +38,8 @@ const MatingRequestDialog = ({
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="sm"
       fullWidth
@@ -51,14 +52,13 @@ const MatingRequestDialog = ({
           <Typography variant="h6" align="center" gutterBottom>
             Request Details
           </Typography>
-          
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-around', 
+
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
             alignItems: 'center',
             my: 2
           }}>
-            {/* Sender pet */}
             <Box sx={{ textAlign: 'center' }}>
               <Avatar
                 src={senderPet?.image}
@@ -69,17 +69,16 @@ const MatingRequestDialog = ({
                 {senderPet?.name}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Your pet ({senderPet?.gender})
+                Your pet
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 {senderPet?.breed}
               </Typography>
             </Box>
-            
-            {/* Heart icon */}
-            <FavoriteIcon 
-              color="error" 
-              sx={{ 
+
+            <FavoriteIcon
+              color="error"
+              sx={{
                 fontSize: 40,
                 mx: 2,
                 animation: 'pulse 1.5s infinite',
@@ -97,9 +96,9 @@ const MatingRequestDialog = ({
                     opacity: 0.7
                   }
                 }
-              }} 
+              }}
             />
-            
+
             {/* Receiver pet */}
             <Box sx={{ textAlign: 'center' }}>
               <Avatar
@@ -119,7 +118,7 @@ const MatingRequestDialog = ({
             </Box>
           </Box>
         </Box>
-        
+
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography variant="subtitle1" gutterBottom>
@@ -139,9 +138,9 @@ const MatingRequestDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button 
-          onClick={handleSend} 
-          variant="contained" 
+        <Button
+          onClick={handleSend}
+          variant="contained"
           color="primary"
           disabled={!message.trim()}
         >

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch, FaHeart, FaDog, FaCat } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-
 const HeaderSection = () => {
   const navigate = useNavigate();
   const [showCategoryOptions, setShowCategoryOptions] = useState(false);
@@ -37,10 +36,10 @@ const HeaderSection = () => {
             Pawsitive <span className="text-lavender-200">Resources</span>
           </h1>
           <p className="text-lg md:text-xl mb-8 text-lavender-100 max-w-2xl">
-            Connecting pet parents with the resources they need for happy, healthy furry companions.
+            Connecting pet parents with the resources they need for happy,
+            healthy furry companions.
           </p>
 
-          {/* Buttons Section */}
           {!showCategoryOptions ? (
             <div className="flex flex-col sm:flex-row gap-4">
               <button

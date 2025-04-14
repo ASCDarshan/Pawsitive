@@ -7,21 +7,16 @@ import {
   CircularProgress,
   Tabs,
   Tab,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Slider,
   Alert,
   Paper,
   Button,
-  Avatar,
   Card,
   CardContent,
   CardMedia,
   IconButton,
   Chip,
-  Container
+  Container,
 } from "@mui/material";
 import { ref, get, set } from "firebase/database";
 import { database, auth } from "../../firebase";
@@ -31,9 +26,13 @@ import PetsIcon from "@mui/icons-material/Pets";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InfoIcon from "@mui/icons-material/Info";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import MatingRequestDialog from "../Profile/components/MatingRequestDialog";
+import MessageDialog from "../Profile/components/MessageDialog";
+import MessageDialogForAdoption from "./MessageDialogForAdoption";
 
-const NearbyMates = () => {
+const AdoptPet = () => {
+  const navigate = useNavigate();
+  const user = auth.currentUser;
+
   const [loading, setLoading] = useState(true);
   const [loadingUserLocation, setLoadingUserLocation] = useState(true);
   const [availablePets, setAvailablePets] = useState([]);
@@ -42,14 +41,18 @@ const NearbyMates = () => {
   const [selectedUserPet, setSelectedUserPet] = useState("");
   const [selectedUserPetData, setSelectedUserPetData] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [maxDistance, setMaxDistance] = useState(10);
+  const [maxDistance, setMaxDistance] = useState(25);
   const [locationError, setLocationError] = useState(null);
   const [tabValue, setTabValue] = useState(0);
-  const [openMatingRequestDialog, setOpenMatingRequestDialog] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
-  const [selectedPetOwner, setSelectedPetOwner] = useState(null);
-  const navigate = useNavigate();
-  const user = auth.currentUser;
+
+  const [openMessageDialog, setOpenMessageDialog] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState({
+    text: "",
+    recipientId: "",
+    petId: "",
+    receiverPetId: "",
+  });
 
   useEffect(() => {
     setLoadingUserLocation(true);
@@ -58,7 +61,7 @@ const NearbyMates = () => {
         (position) => {
           setUserLocation({
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
           });
           setLoadingUserLocation(false);
         },
@@ -77,7 +80,7 @@ const NearbyMates = () => {
   useEffect(() => {
     const fetchUserPets = async () => {
       if (!user) {
-        navigate("/login", { state: { from: "/nearby-mates" } });
+        navigate("/login", { state: { from: "/adopt-pets" } });
         return;
       }
 
@@ -87,9 +90,9 @@ const NearbyMates = () => {
 
         if (snapshot.exists()) {
           const petsData = snapshot.val();
-          const petsArray = Object.keys(petsData).map(petId => ({
+          const petsArray = Object.keys(petsData).map((petId) => ({
             id: petId,
-            ...petsData[petId]
+            ...petsData[petId],
           }));
 
           setUserPets(petsArray);
@@ -109,12 +112,14 @@ const NearbyMates = () => {
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     return distance;
@@ -133,16 +138,17 @@ const NearbyMates = () => {
           const allPets = [];
           const petsData = snapshot.val();
 
-          Object.keys(petsData).forEach(userId => {
+          Object.keys(petsData).forEach((userId) => {
             if (userId === user?.uid) return;
 
             const userPets = petsData[userId];
-            Object.keys(userPets).forEach(petId => {
+            Object.keys(userPets).forEach((petId) => {
               const pet = userPets[petId];
-              if (pet.availableForMating) {
+              if (pet.availableForAdoption) {
                 const petLocation = {
                   latitude: userLocation.latitude + (Math.random() - 0.5) * 0.1,
-                  longitude: userLocation.longitude + (Math.random() - 0.5) * 0.1
+                  longitude:
+                    userLocation.longitude + (Math.random() - 0.5) * 0.1,
                 };
 
                 const distance = calculateDistance(
@@ -154,7 +160,7 @@ const NearbyMates = () => {
 
                 const ownerData = {
                   id: userId,
-                  displayName: "Pet Owner"
+                  displayName: "Pet Owner",
                 };
 
                 allPets.push({
@@ -163,7 +169,7 @@ const NearbyMates = () => {
                   userId: userId,
                   distance: distance.toFixed(1),
                   location: petLocation,
-                  owner: ownerData
+                  owner: ownerData,
                 });
               }
             });
@@ -193,7 +199,7 @@ const NearbyMates = () => {
       return;
     }
 
-    const filtered = availablePets.filter(pet => {
+    const filtered = availablePets.filter((pet) => {
       if (pet.type !== selectedUserPetData.type) return false;
 
       if (pet.gender === selectedUserPetData.gender) return false;
@@ -210,87 +216,79 @@ const NearbyMates = () => {
     setTabValue(newValue);
   };
 
-  const handleUserPetChange = (event) => {
-    const petId = event.target.value;
-    setSelectedUserPet(petId);
-    const petData = userPets.find(pet => pet.id === petId);
-    setSelectedUserPetData(petData);
-  };
-
-  const handleDistanceChange = (newValue) => {
+  const handleDistanceChange = (event, newValue) => {
     setMaxDistance(newValue);
   };
 
   const handlePetDetail = (pet) => {
     navigate(`/pet-detail/${pet.id}`);
-    // console.log("View pet details:", pet);
   };
 
-  const handleOpenMatingRequest = (pet) => {
-    setSelectedPet(pet);
-    setSelectedPetOwner(pet.owner);
-    setOpenMatingRequestDialog(true);
-  };
+  const handleOpenMessageDialog = (request) => {
+    const conversationId = `mating_${request.id}`;
 
-  const handleSendMatingRequest = async (requestData) => {
-    if (!user || !selectedUserPetData || !selectedPet) return;
+    setCurrentMessage({
+      text: "",
+      recipientId:
+        request.direction === "incoming"
+          ? request.senderId
+          : request.receiverId,
+      recipientName:
+        request.direction === "incoming"
+          ? request.senderName
+          : request.receiverName,
+      petId:
+        request.direction === "incoming"
+          ? request.receiverPetId
+          : request.senderPetId,
+      receiverPetId:
+        request.direction === "incoming"
+          ? request.senderPetId
+          : request.receiverPetId,
+      matingRequestId: request.id,
+      conversationId: conversationId,
+      receiverPet: {
+        name:
+          request.direction === "incoming"
+            ? request.senderPetName
+            : request.receiverPetName,
+        image:
+          request.direction === "incoming"
+            ? request.senderPetImage
+            : request.receiverPetImage,
+      },
+    });
 
-    try {
-      const requestId = Date.now().toString();
-
-      const receiverRequestRef = ref(database, `matingRequests/received/${selectedPet.userId}/${requestId}`);
-      await set(receiverRequestRef, {
-        id: requestId,
-        senderId: user.uid,
-        senderName: user.displayName,
-        senderPetId: selectedUserPetData.id,
-        senderPetName: selectedUserPetData.name,
-        receiverId: selectedPet.userId,
-        receiverPetId: selectedPet.id,
-        receiverPetName: selectedPet.name,
-        message: requestData.message,
-        status: 'pending',
-        createdAt: Date.now(),
-        direction: 'incoming'
-      });
-
-      const senderRequestRef = ref(database, `matingRequests/sent/${user.uid}/${requestId}`);
-      await set(senderRequestRef, {
-        id: requestId,
-        senderId: user.uid,
-        senderName: user.displayName,
-        senderPetId: selectedUserPetData.id,
-        senderPetName: selectedUserPetData.name,
-        receiverId: selectedPet.userId,
-        receiverPetId: selectedPet.id,
-        receiverPetName: selectedPet.name,
-        message: requestData.message,
-        status: 'pending',
-        createdAt: Date.now(),
-        direction: 'outgoing'
-      });
-
-      setOpenMatingRequestDialog(false);
-
-      alert("Mating request sent successfully!");
-    } catch (error) {
-      console.error("Error sending mating request:", error);
-      alert("Failed to send mating request. Please try again.");
-    }
+    setOpenMessageDialog(true);
   };
 
   if (loadingUserLocation) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <CircularProgress />
-        <Typography variant="body1" sx={{ ml: 2 }}>Getting your location...</Typography>
+        <Typography variant="body1" sx={{ ml: 2 }}>
+          Getting your location...
+        </Typography>
       </Box>
     );
   }
 
   if (locationError) {
     return (
-      <Box sx={{ padding: { xs: 2, sm: 4 }, minHeight: "100vh", backgroundColor: "#f9f5ff" }}>
+      <Box
+        sx={{
+          padding: { xs: 2, sm: 4 },
+          minHeight: "100vh",
+          backgroundColor: "#f9f5ff",
+        }}
+      >
         <Alert severity="error" sx={{ mb: 3 }}>
           Error: {locationError}. We need your location to find nearby pets.
         </Alert>
@@ -304,19 +302,29 @@ const NearbyMates = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ padding: { xs: 2, sm: 3 }, minHeight: "100vh", pb: 8 }}>
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 3,
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h4" sx={{ ml: 2, fontWeight: "bold", display: "flex", alignItems: "center" }}>
+            <Typography
+              variant="h4"
+              sx={{
+                ml: 2,
+                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <FavoriteIcon sx={{ mr: 1, color: "#d81b60" }} />
-              Nearby Mating Pets
+              Adopt a Pet
             </Typography>
           </Box>
         </Box>
@@ -327,7 +335,7 @@ const NearbyMates = () => {
             p: 3,
             mb: 4,
             borderRadius: 2,
-            background: 'linear-gradient(145deg, #f9f5ff 0%, #ffe6e6 100%)'
+            background: "linear-gradient(145deg, #f9f5ff 0%, #ffe6e6 100%)",
           }}
         >
           <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
@@ -336,45 +344,11 @@ const NearbyMates = () => {
 
           {userPets.length === 0 ? (
             <Alert severity="info">
-              You don't have any pets in your profile yet. Please add a pet first.
+              You don't have any pets in your profile yet. Please add a pet
+              first.
             </Alert>
           ) : (
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={5}>
-                <FormControl fullWidth>
-                  <InputLabel id="user-pet-label">Your Pet</InputLabel>
-                  <Select
-                    labelId="user-pet-label"
-                    value={selectedUserPet}
-                    label="Your Pet"
-                    onChange={handleUserPetChange}
-                  >
-                    {userPets.map(pet => (
-                      <MenuItem key={pet.id} value={pet.id}>
-                        {pet.name} ({pet.type} - {pet.gender})
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {selectedUserPetData && (
-                  <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                    <Avatar
-                      src={selectedUserPetData.image}
-                      alt={selectedUserPetData.name}
-                      sx={{ width: 40, height: 40, mr: 1 }}
-                    />
-                    <Box>
-                      <Typography variant="subtitle1">
-                        {selectedUserPetData.name}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {selectedUserPetData.breed || 'Unknown breed'}, {selectedUserPetData.gender}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-              </Grid>
               <Grid item xs={12} sm={7}>
                 <Typography gutterBottom>
                   Maximum Distance: <strong>{maxDistance} km</strong>
@@ -387,16 +361,12 @@ const NearbyMates = () => {
                   valueLabelDisplay="auto"
                   aria-labelledby="distance-slider"
                   marks={[
-                    { value: 5, label: '5km' },
-                    { value: 10, label: '10km' },
-                    { value: 25, label: '25km' },
-                    { value: 50, label: '50km' }
+                    { value: 5, label: "5km" },
+                    { value: 10, label: "10km" },
+                    { value: 25, label: "25km" },
+                    { value: 50, label: "50km" },
                   ]}
                 />
-
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  <strong>Finding opposite gender matches</strong>: We're showing {selectedUserPetData?.gender === 'Male' ? 'female' : 'male'} pets for your {selectedUserPetData?.gender?.toLowerCase()} pet.
-                </Alert>
               </Grid>
             </Grid>
           )}
@@ -404,7 +374,7 @@ const NearbyMates = () => {
 
         {userPets.length > 0 && (
           <>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
               <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
@@ -419,119 +389,144 @@ const NearbyMates = () => {
             </Box>
 
             {loading ? (
-              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 300 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 300,
+                }}
+              >
                 <CircularProgress />
               </Box>
             ) : filteredPets.length > 0 ? (
               <Grid container spacing={3}>
                 {filteredPets.map((pet) => (
                   <Grid item xs={12} sm={6} md={4} key={pet.id}>
-                    <Card sx={{
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      boxShadow: 2,
-                      transition: 'transform 0.3s, box-shadow 0.3s',
-                      '&:hover': {
-                        transform: 'translateY(-8px)',
-                        boxShadow: 4
-                      },
-                      position: 'relative'
-                    }}>
+                    <Card
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        boxShadow: 2,
+                        transition: "transform 0.3s, box-shadow 0.3s",
+                        "&:hover": {
+                          transform: "translateY(-8px)",
+                          boxShadow: 4,
+                        },
+                        position: "relative",
+                      }}
+                    >
                       <Chip
                         icon={<LocationOnIcon />}
                         label={`${pet.distance} km`}
                         color="primary"
                         size="small"
                         sx={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: 10,
                           right: 10,
                           zIndex: 1,
-                          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                          color: 'white'
+                          backgroundColor: "rgba(0, 0, 0, 0.7)",
+                          color: "white",
                         }}
                       />
 
                       <Chip
                         label={pet.gender}
-                        color={pet.gender === 'Female' ? 'secondary' : 'info'}
+                        color={pet.gender === "Female" ? "secondary" : "info"}
                         size="small"
                         sx={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: 10,
                           left: 10,
-                          zIndex: 1
+                          zIndex: 1,
                         }}
                       />
 
-                      <Box sx={{
-                        position: 'relative',
-                        paddingTop: '56.25%',
-                        backgroundColor: '#f5f5f5'
-                      }}>
+                      <Box
+                        sx={{
+                          position: "relative",
+                          paddingTop: "56.25%",
+                          backgroundColor: "#f5f5f5",
+                        }}
+                      >
                         {pet.image ? (
                           <CardMedia
                             component="img"
                             image={pet.image}
                             alt={pet.name}
                             sx={{
-                              position: 'absolute',
+                              position: "absolute",
                               top: 0,
                               left: 0,
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover'
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
                             }}
                           />
                         ) : (
-                          <Box sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}>
-                            <PetsIcon sx={{ fontSize: 60, color: '#bdbdbd' }} />
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <PetsIcon sx={{ fontSize: 60, color: "#bdbdbd" }} />
                           </Box>
                         )}
                       </Box>
 
-                      {/* Pet info */}
                       <CardContent sx={{ flexGrow: 1 }}>
                         <Typography variant="h6" gutterBottom>
                           {pet.name}
                         </Typography>
 
-                        <Typography variant="body2" color="textSecondary" gutterBottom>
-                          <strong>Breed:</strong> {pet.breed || 'Unknown breed'}
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          gutterBottom
+                        >
+                          <strong>Breed:</strong> {pet.breed || "Unknown breed"}
                         </Typography>
 
-                        <Typography variant="body2" color="textSecondary" gutterBottom>
-                          <strong>Age:</strong> {pet.age || 'Unknown age'}
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          gutterBottom
+                        >
+                          <strong>Age:</strong> {pet.age || "Unknown age"}
                         </Typography>
 
                         {pet.description && (
-                          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            sx={{ mt: 1 }}
+                          >
                             {pet.description.length > 100
                               ? `${pet.description.substring(0, 100)}...`
-                              : pet.description
-                            }
+                              : pet.description}
                           </Typography>
                         )}
                       </CardContent>
 
-                      <Box sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        p: 2,
-                        borderTop: '1px solid rgba(0, 0, 0, 0.12)'
-                      }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          p: 2,
+                          borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+                        }}
+                      >
                         <Button
                           variant="outlined"
                           size="small"
@@ -545,10 +540,9 @@ const NearbyMates = () => {
                           variant="contained"
                           color="secondary"
                           size="small"
-                          startIcon={<FavoriteIcon />}
-                          onClick={() => handleOpenMatingRequest(pet)}
+                          onClick={() => handleOpenMessageDialog(pet)}
                         >
-                          Request Mating
+                          Message Owner
                         </Button>
                       </Box>
                     </Card>
@@ -560,26 +554,31 @@ const NearbyMates = () => {
                 elevation={1}
                 sx={{
                   p: 4,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                   borderRadius: 2,
-                  backgroundColor: '#f5f5f5'
+                  backgroundColor: "#f5f5f5",
                 }}
               >
-                <PetsIcon sx={{ fontSize: 64, color: '#bdbdbd', mb: 2 }} />
+                <PetsIcon sx={{ fontSize: 64, color: "#bdbdbd", mb: 2 }} />
                 <Typography variant="h6" sx={{ mb: 1 }}>
                   No Matching Pets Found
                 </Typography>
-                <Typography variant="body2" color="textSecondary" sx={{ mb: 3, textAlign: 'center' }}>
-                  There are no pets available for mating near you that match your pet's profile.
-                  Try increasing the distance or checking back later.
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ mb: 3, textAlign: "center" }}
+                >
+                  There are no pets available for mating near you that match
+                  your pet's profile. Try increasing the distance or checking
+                  back later.
                 </Typography>
                 <Button
                   variant="contained"
                   color="primary"
                   startIcon={<ArrowBackIcon />}
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate("/profile")}
                   size="large"
                 >
                   Back to Profile
@@ -589,19 +588,19 @@ const NearbyMates = () => {
           </>
         )}
 
-        {selectedUserPetData && selectedPet && (
-          <MatingRequestDialog
-            open={openMatingRequestDialog}
-            onClose={() => setOpenMatingRequestDialog(false)}
-            senderPet={selectedUserPetData}
-            receiverPet={selectedPet}
-            receiverOwner={selectedPetOwner}
-            onSend={handleSendMatingRequest}
-          />
-        )}
+        <MessageDialogForAdoption
+          open={openMessageDialog}
+          onClose={() => setOpenMessageDialog(false)}
+          conversationId={currentMessage.conversationId}
+          recipientId={currentMessage.recipientId}
+          recipientName={currentMessage.recipientName}
+          senderPet={currentMessage.senderPet}
+          receiverPet={currentMessage.receiverPet}
+          matingRequestId={currentMessage.matingRequestId}
+        />
       </Box>
     </Container>
   );
 };
 
-export default NearbyMates;
+export default AdoptPet;
