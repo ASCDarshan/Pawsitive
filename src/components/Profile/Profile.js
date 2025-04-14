@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
-  Divider,
   IconButton,
   Grid,
   Fab,
@@ -15,20 +14,12 @@ import {
   Avatar,
   Card,
   CardContent,
-  CardMedia,
   Chip,
-  Alert,
   Container,
-  Tooltip,
   Menu,
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
 } from "@mui/material";
 import { auth, db, database } from "../../firebase";
 import {
@@ -39,7 +30,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { ref, set, get, update, remove, push } from "firebase/database";
+import { ref, set, get, update, remove } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
@@ -57,7 +48,6 @@ import PetDialog from "./components/PetDialog";
 import ResourcesList from "./components/ResourcesList";
 import CommentsList from "./components/CommentsList";
 import VaccinationDialog from "./components/VaccinationDialog";
-import MatingRequestDialog from "./components/MatingRequestDialog";
 import MessageDialog from "./components/MessageDialog";
 import ConversationsList from "./components/ConversationsList";
 
@@ -79,9 +69,9 @@ function TabPanel(props) {
 }
 
 const Profile = () => {
+  const user = auth.currentUser;
   const [likedResources, setLikedResources] = useState([]);
   const [comments, setComments] = useState([]);
-  const [user, setUser] = useState(auth.currentUser);
   const [pets, setPets] = useState([]);
   const [openPetDialog, setOpenPetDialog] = useState(false);
   const [profileTabValue, setProfileTabValue] = useState(0);
@@ -108,6 +98,7 @@ const Profile = () => {
     description: "",
     image: "",
     availableForMating: false,
+    availableForAdoption: false,
     medical: {
       conditions: [],
       allergies: [],
@@ -373,7 +364,6 @@ const Profile = () => {
             ? senderPetSnapshot.val()
             : { name: "Unknown Pet" };
 
-          // Get receiver pet details
           const receiverPetRef = ref(
             database,
             `userPets/${request.receiverId}/${request.receiverPetId}`
@@ -397,7 +387,6 @@ const Profile = () => {
         }
       }
 
-      // Sort by date (newest first)
       requests.sort((a, b) => b.createdAt - a.createdAt);
 
       setMatingRequests(requests);
@@ -406,17 +395,14 @@ const Profile = () => {
     }
   };
 
-  // Handle profile tab change
   const handleProfileTabChange = (event, newValue) => {
     setProfileTabValue(newValue);
   };
 
-  // Handle tab change (for pet dialog)
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  // Open dialog to add a new pet
   const handleAddPet = () => {
     setCurrentPet({
       id: Date.now().toString(),
@@ -430,6 +416,7 @@ const Profile = () => {
       description: "",
       image: "",
       availableForMating: false,
+      availableForAdoption: false,
       medical: {
         conditions: [],
         allergies: [],
@@ -441,14 +428,12 @@ const Profile = () => {
     setOpenPetDialog(true);
   };
 
-  // Open dialog to edit an existing pet
   const handleEditPet = (pet) => {
     setCurrentPet({ ...pet });
     setIsEditMode(true);
     setOpenPetDialog(true);
   };
 
-  // Save pet to database
   const handleSavePet = async () => {
     if (!user || !currentPet.name) return;
 
@@ -456,7 +441,6 @@ const Profile = () => {
       const petRef = ref(database, `userPets/${user.uid}/${currentPet.id}`);
       await set(petRef, currentPet);
 
-      // Update local state
       if (isEditMode) {
         setPets(
           pets.map((pet) => (pet.id === currentPet.id ? currentPet : pet))
@@ -472,7 +456,6 @@ const Profile = () => {
     }
   };
 
-  // Delete a pet
   const handleDeletePet = async (petId) => {
     if (!user || !window.confirm("Are you sure you want to delete this pet?"))
       return;
@@ -481,7 +464,6 @@ const Profile = () => {
       const petRef = ref(database, `userPets/${user.uid}/${petId}`);
       await remove(petRef);
 
-      // Update local state
       setPets(pets.filter((pet) => pet.id !== petId));
     } catch (error) {
       console.error("Error deleting pet:", error);
@@ -489,7 +471,6 @@ const Profile = () => {
     }
   };
 
-  // Handle vaccination dialog
   const handleAddVaccination = () => {
     console.log("Adding vaccination for pet type:", currentPet.type);
 
@@ -503,14 +484,12 @@ const Profile = () => {
     setOpenVaccinationDialog(true);
   };
 
-  // Edit existing vaccination
   const handleEditVaccination = (vaccination, index) => {
     setCurrentVaccination({ ...vaccination });
     setVaccinationEditIndex(index);
     setOpenVaccinationDialog(true);
   };
 
-  // Save vaccination
   const handleSaveVaccination = () => {
     if (!currentVaccination.name || !currentVaccination.date) return;
 
@@ -518,10 +497,8 @@ const Profile = () => {
     updatedPet.vaccinations = updatedPet.vaccinations || [];
 
     if (vaccinationEditIndex >= 0) {
-      // Edit existing vaccination
       updatedPet.vaccinations[vaccinationEditIndex] = currentVaccination;
     } else {
-      // Add new vaccination
       updatedPet.vaccinations.push(currentVaccination);
     }
 
@@ -529,20 +506,17 @@ const Profile = () => {
     setOpenVaccinationDialog(false);
   };
 
-  // Delete vaccination
   const handleDeleteVaccination = (index) => {
     const updatedPet = { ...currentPet };
     updatedPet.vaccinations.splice(index, 1);
     setCurrentPet(updatedPet);
   };
 
-  // Open mating request options menu
   const handleRequestMenuOpen = (event, request) => {
     setAnchorEl(event.currentTarget);
     setSelectedRequest(request);
   };
 
-  // Close mating request options menu
   const handleRequestMenuClose = () => {
     setAnchorEl(null);
   };
@@ -561,12 +535,10 @@ const Profile = () => {
     setOpenMessageDialog(true);
   };
 
-  // Accept mating request
   const handleAcceptRequest = async () => {
     if (!selectedRequest) return;
 
     try {
-      // Update request status in database
       const requestRef = ref(
         database,
         `matingRequests/received/${user.uid}/${selectedRequest.id}`
@@ -576,7 +548,6 @@ const Profile = () => {
         updatedAt: Date.now(),
       });
 
-      // Update in sender's sent requests
       const senderRequestRef = ref(
         database,
         `matingRequests/sent/${selectedRequest.senderId}/${selectedRequest.id}`
@@ -586,7 +557,6 @@ const Profile = () => {
         updatedAt: Date.now(),
       });
 
-      // Update local state
       setMatingRequests(
         matingRequests.map((req) =>
           req.id === selectedRequest.id
@@ -595,7 +565,6 @@ const Profile = () => {
         )
       );
 
-      // Close menu
       handleRequestMenuClose();
     } catch (error) {
       console.error("Error accepting request:", error);
@@ -603,12 +572,10 @@ const Profile = () => {
     }
   };
 
-  // Decline mating request
   const handleDeclineRequest = async () => {
     if (!selectedRequest) return;
 
     try {
-      // Update request status in database
       const requestRef = ref(
         database,
         `matingRequests/received/${user.uid}/${selectedRequest.id}`
@@ -618,7 +585,6 @@ const Profile = () => {
         updatedAt: Date.now(),
       });
 
-      // Update in sender's sent requests
       const senderRequestRef = ref(
         database,
         `matingRequests/sent/${selectedRequest.senderId}/${selectedRequest.id}`
@@ -628,7 +594,6 @@ const Profile = () => {
         updatedAt: Date.now(),
       });
 
-      // Update local state
       setMatingRequests(
         matingRequests.map((req) =>
           req.id === selectedRequest.id
@@ -637,7 +602,6 @@ const Profile = () => {
         )
       );
 
-      // Close menu
       handleRequestMenuClose();
     } catch (error) {
       console.error("Error declining request:", error);
@@ -645,13 +609,9 @@ const Profile = () => {
     }
   };
 
-  // Open message dialog
-  // In your Profile.jsx, find the handleOpenMessageDialog function
   const handleOpenMessageDialog = (request) => {
-    // Create a consistent conversationId based on the mating request
     const conversationId = `mating_${request.id}`;
 
-    // Find the sender pet from your pets array
     const senderPet = pets.find(
       (pet) =>
         pet.id ===
@@ -696,59 +656,6 @@ const Profile = () => {
     setOpenMessageDialog(true);
   };
 
-  // Send message
-  const handleSendMessage = async () => {
-    if (!currentMessage.text || !currentMessage.recipientId) return;
-
-    try {
-      // Create conversation if it doesn't exist
-      const conversationId = `${user.uid}_${currentMessage.recipientId}_${currentMessage.matingRequestId}`;
-      const conversationRef = ref(database, `conversations/${conversationId}`);
-
-      // Create message
-      const messageRef = ref(
-        database,
-        `conversations/${conversationId}/messages`
-      );
-      const newMessageRef = push(messageRef);
-
-      await set(newMessageRef, {
-        text: currentMessage.text,
-        senderId: user.uid,
-        senderName: user.displayName,
-        timestamp: Date.now(),
-        petId: currentMessage.petId,
-        receiverPetId: currentMessage.receiverPetId,
-      });
-
-      // Update conversation metadata
-      await update(conversationRef, {
-        lastMessageText: currentMessage.text,
-        lastMessageTimestamp: Date.now(),
-        participants: {
-          [user.uid]: true,
-          [currentMessage.recipientId]: true,
-        },
-        matingRequestId: currentMessage.matingRequestId,
-      });
-
-      // Close dialog
-      setOpenMessageDialog(false);
-
-      // Reset message
-      setCurrentMessage({
-        text: "",
-        recipientId: "",
-        petId: "",
-        receiverPetId: "",
-        matingRequestId: "",
-      });
-    } catch (error) {
-      console.error("Error sending message:", error);
-      alert("Failed to send message. Please try again.");
-    }
-  };
-
   useEffect(() => {
     if (user) {
       fetchLikedResources();
@@ -758,7 +665,6 @@ const Profile = () => {
     }
   }, [user]);
 
-  // Count pending mating requests
   const pendingRequestsCount = matingRequests.filter(
     (req) => req.direction === "incoming" && req.status === "pending"
   ).length;
@@ -766,7 +672,6 @@ const Profile = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ padding: { xs: 2, sm: 3 }, pb: 8 }}>
-        {/* Header */}
         <Box
           sx={{
             display: "flex",
@@ -936,12 +841,10 @@ const Profile = () => {
           )}
         </TabPanel>
 
-        {/* Resources Tab */}
         <TabPanel value={profileTabValue} index={1}>
           <ResourcesList resources={likedResources} />
         </TabPanel>
 
-        {/* Mating Requests Tab */}
         <TabPanel value={profileTabValue} index={2}>
           <Box
             sx={{
@@ -1023,7 +926,6 @@ const Profile = () => {
                       )}
                     </Box>
 
-                    {/* Direction indicator */}
                     <Box
                       sx={{
                         position: "absolute",
@@ -1048,7 +950,6 @@ const Profile = () => {
                     </Box>
 
                     <Box sx={{ display: "flex", p: 0 }}>
-                      {/* Pet images */}
                       <Box
                         sx={{
                           display: "flex",
@@ -1066,7 +967,6 @@ const Profile = () => {
                             height: 120,
                           }}
                         >
-                          {/* Left pet (requester) */}
                           <Avatar
                             src={
                               request.direction === "incoming"
@@ -1089,7 +989,6 @@ const Profile = () => {
                             }}
                           />
 
-                          {/* Right pet (requested) */}
                           <Avatar
                             src={
                               request.direction === "incoming"
@@ -1112,7 +1011,6 @@ const Profile = () => {
                             }}
                           />
 
-                          {/* Heart icon in middle */}
                           <FavoriteIcon
                             sx={{
                               position: "absolute",
@@ -1129,7 +1027,6 @@ const Profile = () => {
                         </Box>
                       </Box>
 
-                      {/* Request details */}
                       <CardContent sx={{ width: "60%" }}>
                         <Typography variant="h6" component="div" sx={{ mb: 1 }}>
                           {request.direction === "incoming"
@@ -1175,7 +1072,6 @@ const Profile = () => {
                       </CardContent>
                     </Box>
 
-                    {/* Actions */}
                     <Box
                       sx={{
                         display: "flex",
@@ -1184,7 +1080,6 @@ const Profile = () => {
                         borderTop: "1px solid rgba(0, 0, 0, 0.12)",
                       }}
                     >
-                      {/* Left side buttons */}
                       <Box>
                         {request.direction === "incoming" &&
                           request.status === "pending" && (
@@ -1211,7 +1106,6 @@ const Profile = () => {
                             </>
                           )}
                       </Box>
-                      {/* Right side buttons */}
                       <Box>
                         {request.status === "accepted" && (
                           <Button
@@ -1274,12 +1168,10 @@ const Profile = () => {
           )}
         </TabPanel>
 
-        {/* Comments Tab */}
         <TabPanel value={profileTabValue} index={3}>
           <CommentsList comments={comments} navigate={navigate} />
         </TabPanel>
 
-        {/* Pet Information Dialog */}
         <PetDialog
           open={openPetDialog}
           onClose={() => setOpenPetDialog(false)}
@@ -1296,7 +1188,6 @@ const Profile = () => {
           petType={currentPet.type}
         />
 
-        {/* Vaccination Dialog */}
         <VaccinationDialog
           open={openVaccinationDialog}
           onClose={() => setOpenVaccinationDialog(false)}
@@ -1318,7 +1209,6 @@ const Profile = () => {
           matingRequestId={currentMessage.matingRequestId}
         />
 
-        {/* Mating Request Options Menu */}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}

@@ -1,9 +1,9 @@
 // components/PetDialog.jsx
 import React, { useState, useEffect } from 'react';
-import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
   DialogActions,
   Button,
   Box,
@@ -21,7 +21,6 @@ import {
   CardActions,
   FormControlLabel,
   Switch,
-  IconButton,
   Paper,
   Avatar,
   Chip
@@ -37,9 +36,7 @@ import VaccinesIcon from "@mui/icons-material/Vaccines";
 import BreedSelect from './BreedSelect';
 import MedicalConditionsSelect from './MedicalConditionsSelect';
 import AllergiesSelect from './AllergiesSelect';
-import VaccinationSelect from './VaccinationSelect';
 
-// Custom styled components
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     borderRadius: 16,
@@ -186,7 +183,6 @@ const StatusChip = styled(Chip)(({ theme, status }) => ({
   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
 }));
 
-// Tab Panel component for the pet profile
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -207,26 +203,25 @@ function TabPanel(props) {
   );
 }
 
-const PetDialog = ({ 
-  open, 
-  onClose, 
-  currentPet, 
-  setCurrentPet, 
-  isEditMode, 
-  tabValue, 
-  handleTabChange, 
-  onSave, 
+const PetDialog = ({
+  open,
+  onClose,
+  currentPet,
+  setCurrentPet,
+  isEditMode,
+  tabValue,
+  handleTabChange,
+  onSave,
   onAddVaccination,
   onEditVaccination,
   onDeleteVaccination,
-  vaccinations = [] 
+  vaccinations = []
 }) => {
-  // Local state for other/custom values
+
   const [otherBreed, setOtherBreed] = useState('');
   const [otherConditions, setOtherConditions] = useState('');
   const [otherAllergies, setOtherAllergies] = useState('');
-  
-  // Initialize medical fields as arrays if not already
+
   useEffect(() => {
     if (currentPet) {
       if (!currentPet.medical) {
@@ -239,13 +234,12 @@ const PetDialog = ({
           }
         });
       } else if (!Array.isArray(currentPet.medical.conditions)) {
-        // Convert strings to arrays if needed
-        const conditionsArray = currentPet.medical.conditions ? 
+        const conditionsArray = currentPet.medical.conditions ?
           [currentPet.medical.conditions] : [];
-        
+
         const allergiesArray = currentPet.medical.allergies ?
           [currentPet.medical.allergies] : [];
-          
+
         setCurrentPet({
           ...currentPet,
           medical: {
@@ -258,62 +252,53 @@ const PetDialog = ({
     }
   }, [currentPet?.id]);
 
-  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    
+
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
-  
-  // Check if vaccination is due
+
   const isVaccinationDue = (nextDue) => {
     if (!nextDue) return false;
-    
+
     const dueDate = new Date(nextDue);
     const now = new Date();
     const oneMonthFromNow = new Date();
     oneMonthFromNow.setMonth(now.getMonth() + 1);
-    
+
     return dueDate <= oneMonthFromNow;
   };
 
-  // Handle image upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setCurrentPet({...currentPet, image: e.target.result});
+        setCurrentPet({ ...currentPet, image: e.target.result });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Handle breed change
   const handleBreedChange = (event) => {
     const selectedBreed = event.target.value;
-    setCurrentPet({...currentPet, breed: selectedBreed});
-    
-    // Reset other breed if not "Other"
+    setCurrentPet({ ...currentPet, breed: selectedBreed });
+
     if (selectedBreed !== 'Other') {
       setOtherBreed('');
     }
   };
 
-  // Handle other breed change
   const handleOtherBreedChange = (event) => {
     const value = event.target.value;
     setOtherBreed(value);
-    
-    // If they select "Other" but then specify a custom breed,
-    // we store the custom breed in the pet data
+
     if (currentPet.breed === 'Other') {
-      setCurrentPet({...currentPet, customBreed: value});
+      setCurrentPet({ ...currentPet, customBreed: value });
     }
   };
 
-  // Handle medical conditions change
   const handleConditionsChange = (selectedConditions) => {
     setCurrentPet({
       ...currentPet,
@@ -322,18 +307,16 @@ const PetDialog = ({
         conditions: selectedConditions
       }
     });
-    
-    // Reset other conditions if "Other" is not selected
+
     if (!selectedConditions.includes('Other')) {
       setOtherConditions('');
     }
   };
 
-  // Handle other conditions change
   const handleOtherConditionsChange = (event) => {
     const value = event.target.value;
     setOtherConditions(value);
-    
+
     setCurrentPet({
       ...currentPet,
       medical: {
@@ -343,7 +326,6 @@ const PetDialog = ({
     });
   };
 
-  // Handle allergies change
   const handleAllergiesChange = (selectedAllergies) => {
     setCurrentPet({
       ...currentPet,
@@ -352,18 +334,16 @@ const PetDialog = ({
         allergies: selectedAllergies
       }
     });
-    
-    // Reset other allergies if "Other" is not selected
+
     if (!selectedAllergies.includes('Other')) {
       setOtherAllergies('');
     }
   };
 
-  // Handle other allergies change
   const handleOtherAllergiesChange = (event) => {
     const value = event.target.value;
     setOtherAllergies(value);
-    
+
     setCurrentPet({
       ...currentPet,
       medical: {
@@ -373,20 +353,9 @@ const PetDialog = ({
     });
   };
 
-  // Handle vaccination selection
-  const handleVaccinationTypeChange = (event) => {
-    const selectedVaccination = event.target.value;
-    
-    // This assumes we're in a context where current vaccination is being edited
-    if (onAddVaccination) {
-      // This is just changing the dropdown - actual vaccination handling is in the parent
-      console.log("Selected vaccination:", selectedVaccination);
-    }
-  };
-
   return (
-    <StyledDialog 
-      open={open} 
+    <StyledDialog
+      open={open}
       onClose={onClose}
       fullWidth
       maxWidth="md"
@@ -403,32 +372,30 @@ const PetDialog = ({
           </StyledTabs>
         </Box>
 
-        {/* General Information Tab */}
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
-            {/* Pet Image Upload */}
             <Grid item xs={12} sx={{ mb: 1 }}>
               <ImageUploadBox>
                 {currentPet.image ? (
                   <Box sx={{ position: 'relative', width: '100%', maxWidth: 300, maxHeight: 200 }}>
-                    <img 
-                      src={currentPet.image} 
-                      alt="Pet preview" 
-                      style={{ 
-                        width: '100%', 
-                        maxHeight: 200, 
+                    <img
+                      src={currentPet.image}
+                      alt="Pet preview"
+                      style={{
+                        width: '100%',
+                        maxHeight: 200,
                         objectFit: 'cover',
                         borderRadius: '16px'
-                      }} 
+                      }}
                     />
                     <PrimaryButton
                       variant="contained"
                       component="label"
                       startIcon={<EditIcon />}
                       size="small"
-                      sx={{ 
-                        position: 'absolute', 
-                        bottom: 10, 
+                      sx={{
+                        position: 'absolute',
+                        bottom: 10,
                         right: 10,
                         backgroundColor: 'rgba(138, 108, 224, 0.85)',
                         '&:hover': {
@@ -447,10 +414,10 @@ const PetDialog = ({
                   </Box>
                 ) : (
                   <Box sx={{ textAlign: 'center' }}>
-                    <Avatar 
-                      sx={{ 
-                        width: 80, 
-                        height: 80, 
+                    <Avatar
+                      sx={{
+                        width: 80,
+                        height: 80,
                         mb: 2,
                         backgroundColor: '#E6E0FF',
                         color: '#8A6CE0'
@@ -485,7 +452,7 @@ const PetDialog = ({
                 fullWidth
                 required
                 value={currentPet.name || ''}
-                onChange={(e) => setCurrentPet({...currentPet, name: e.target.value})}
+                onChange={(e) => setCurrentPet({ ...currentPet, name: e.target.value })}
                 margin="normal"
                 InputLabelProps={{
                   sx: { color: '#7A7790' }
@@ -498,7 +465,7 @@ const PetDialog = ({
                 <Select
                   labelId="pet-type-label"
                   value={currentPet.type || ''}
-                  onChange={(e) => setCurrentPet({...currentPet, type: e.target.value, breed: ''})}
+                  onChange={(e) => setCurrentPet({ ...currentPet, type: e.target.value, breed: '' })}
                   label="Pet Type"
                   sx={{ borderRadius: 12 }}
                 >
@@ -512,7 +479,6 @@ const PetDialog = ({
               </StyledFormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              {/* Use the BreedSelect component - would need to update this component to match the new style */}
               <BreedSelect
                 petType={currentPet.type}
                 value={currentPet.breed || ''}
@@ -527,7 +493,7 @@ const PetDialog = ({
                 <Select
                   labelId="pet-gender-label"
                   value={currentPet.gender || ''}
-                  onChange={(e) => setCurrentPet({...currentPet, gender: e.target.value})}
+                  onChange={(e) => setCurrentPet({ ...currentPet, gender: e.target.value })}
                   label="Gender"
                   sx={{ borderRadius: 12 }}
                 >
@@ -542,7 +508,7 @@ const PetDialog = ({
                 label="Age"
                 fullWidth
                 value={currentPet.age || ''}
-                onChange={(e) => setCurrentPet({...currentPet, age: e.target.value})}
+                onChange={(e) => setCurrentPet({ ...currentPet, age: e.target.value })}
                 margin="normal"
                 placeholder="e.g., 2 years"
                 InputLabelProps={{
@@ -555,7 +521,7 @@ const PetDialog = ({
                 label="Weight"
                 fullWidth
                 value={currentPet.weight || ''}
-                onChange={(e) => setCurrentPet({...currentPet, weight: e.target.value})}
+                onChange={(e) => setCurrentPet({ ...currentPet, weight: e.target.value })}
                 margin="normal"
                 placeholder="e.g., 15 kg"
                 InputLabelProps={{
@@ -568,40 +534,72 @@ const PetDialog = ({
                 label="Color/Markings"
                 fullWidth
                 value={currentPet.color || ''}
-                onChange={(e) => setCurrentPet({...currentPet, color: e.target.value})}
+                onChange={(e) => setCurrentPet({ ...currentPet, color: e.target.value })}
                 margin="normal"
                 InputLabelProps={{
                   sx: { color: '#7A7790' }
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={currentPet.availableForMating || false}
-                    onChange={(e) => setCurrentPet({...currentPet, availableForMating: e.target.checked})}
-                    sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#8A6CE0',
-                        '&:hover': {
-                          backgroundColor: 'rgba(138, 108, 224, 0.08)',
+            <Grid container direction="row" alignItems="center" spacing={2} item xs={6} sm={6}>
+              <Grid item xs={6} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={currentPet.availableForMating || false}
+                      onChange={(e) =>
+                        setCurrentPet({ ...currentPet, availableForMating: e.target.checked })
+                      }
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#8A6CE0',
+                          '&:hover': {
+                            backgroundColor: 'rgba(138, 108, 224, 0.08)',
+                          },
                         },
-                      },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#8A6CE0',
-                      },
-                    }}
-                  />
-                }
-                label={
-                  <Typography sx={{ color: '#5D5A72', fontWeight: 500 }}>
-                    Available for Mating
-                  </Typography>
-                }
-                sx={{ mt: 2 }}
-              />
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#8A6CE0',
+                        },
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography sx={{ color: '#5D5A72', fontWeight: 500 }}>
+                      Available for Mating
+                    </Typography>
+                  }
+                />
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={currentPet.availableForAdoption || false}
+                      onChange={(e) =>
+                        setCurrentPet({ ...currentPet, availableForAdoption: e.target.checked })
+                      }
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#4CAF50',
+                          '&:hover': {
+                            backgroundColor: 'rgba(76, 175, 80, 0.08)',
+                          },
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#4CAF50',
+                        },
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography sx={{ color: '#5D5A72', fontWeight: 500 }}>
+                      Available for Adoption
+                    </Typography>
+                  }
+                />
+              </Grid>
             </Grid>
+
             <Grid item xs={12}>
               <StyledTextField
                 label="Description"
@@ -609,7 +607,7 @@ const PetDialog = ({
                 multiline
                 rows={3}
                 value={currentPet.description || ''}
-                onChange={(e) => setCurrentPet({...currentPet, description: e.target.value})}
+                onChange={(e) => setCurrentPet({ ...currentPet, description: e.target.value })}
                 margin="normal"
                 placeholder="Special traits, personality, etc."
                 InputLabelProps={{
@@ -620,13 +618,12 @@ const PetDialog = ({
           </Grid>
         </TabPanel>
 
-        {/* Medical Profile Tab */}
         <TabPanel value={tabValue} index={1}>
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              backgroundColor: '#F9F7FF', 
-              p: 3, 
+          <Paper
+            elevation={0}
+            sx={{
+              backgroundColor: '#F9F7FF',
+              p: 3,
               borderRadius: 4,
               mb: 3
             }}
@@ -638,10 +635,9 @@ const PetDialog = ({
               Keep track of your pet's health conditions, allergies, and medications.
             </Typography>
           </Paper>
-        
+
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              {/* Use MedicalConditionsSelect component - would need to update this component to match the new style */}
               <MedicalConditionsSelect
                 value={currentPet.medical?.conditions || []}
                 onChange={handleConditionsChange}
@@ -650,7 +646,6 @@ const PetDialog = ({
               />
             </Grid>
             <Grid item xs={12}>
-              {/* Use AllergiesSelect component - would need to update this component to match the new style */}
               <AllergiesSelect
                 value={currentPet.medical?.allergies || []}
                 onChange={handleAllergiesChange}
@@ -666,8 +661,8 @@ const PetDialog = ({
                 rows={2}
                 value={currentPet.medical?.medications || ''}
                 onChange={(e) => setCurrentPet({
-                  ...currentPet, 
-                  medical: {...(currentPet.medical || {}), medications: e.target.value}
+                  ...currentPet,
+                  medical: { ...(currentPet.medical || {}), medications: e.target.value }
                 })}
                 margin="normal"
                 placeholder="Current medications and dosage"
@@ -679,13 +674,12 @@ const PetDialog = ({
           </Grid>
         </TabPanel>
 
-        {/* Vaccination Records Tab */}
         <TabPanel value={tabValue} index={2}>
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              backgroundColor: '#F9F7FF', 
-              p: 3, 
+          <Paper
+            elevation={0}
+            sx={{
+              backgroundColor: '#F9F7FF',
+              p: 3,
               borderRadius: 4,
               mb: 3,
               display: 'flex',
@@ -705,7 +699,7 @@ const PetDialog = ({
               variant="contained"
               startIcon={<AddIcon />}
               onClick={onAddVaccination}
-              sx={{ 
+              sx={{
                 minWidth: '150px',
                 backgroundColor: '#8A6CE0',
                 borderRadius: 12,
@@ -717,7 +711,7 @@ const PetDialog = ({
               Add Vaccination
             </PrimaryButton>
           </Paper>
-          
+
           {vaccinations && vaccinations.length > 0 ? (
             <Grid container spacing={3}>
               {vaccinations.map((vaccine, index) => (
@@ -766,11 +760,11 @@ const PetDialog = ({
                       )}
                     </StyledCardContent>
                     <StyledCardActions>
-                      <Button 
-                        size="small" 
+                      <Button
+                        size="small"
                         startIcon={<EditIcon />}
                         onClick={() => onEditVaccination(vaccine, index)}
-                        sx={{ 
+                        sx={{
                           color: '#8A6CE0',
                           '&:hover': {
                             backgroundColor: 'rgba(138, 108, 224, 0.08)',
@@ -779,12 +773,12 @@ const PetDialog = ({
                       >
                         Edit
                       </Button>
-                      <Button 
-                        size="small" 
+                      <Button
+                        size="small"
                         color="error"
                         startIcon={<DeleteIcon />}
                         onClick={() => onDeleteVaccination(index)}
-                        sx={{ 
+                        sx={{
                           '&:hover': {
                             backgroundColor: 'rgba(244, 67, 54, 0.08)',
                           }
@@ -798,11 +792,11 @@ const PetDialog = ({
               ))}
             </Grid>
           ) : (
-            <Box 
-              sx={{ 
-                p: 4, 
-                textAlign: 'center', 
-                backgroundColor: '#F6F2FF', 
+            <Box
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                backgroundColor: '#F6F2FF',
                 borderRadius: 4,
                 border: '2px dashed #D2C7F9'
               }}
@@ -827,10 +821,10 @@ const PetDialog = ({
         </TabPanel>
       </DialogContent>
       <DialogActions sx={{ padding: 3, borderTop: '1px solid #EAE4FF', justifyContent: 'flex-end' }}>
-        <Button 
-          onClick={onClose} 
-          sx={{ 
-            color: '#5D5A72', 
+        <Button
+          onClick={onClose}
+          sx={{
+            color: '#5D5A72',
             borderRadius: 12,
             textTransform: 'none',
             fontWeight: 500,
@@ -841,11 +835,11 @@ const PetDialog = ({
         >
           Cancel
         </Button>
-        <PrimaryButton 
-          onClick={onSave} 
-          variant="contained" 
+        <PrimaryButton
+          onClick={onSave}
+          variant="contained"
           disabled={!currentPet.name}
-          sx={{ 
+          sx={{
             backgroundColor: '#8A6CE0',
             '&:hover': {
               backgroundColor: '#6247AA',
