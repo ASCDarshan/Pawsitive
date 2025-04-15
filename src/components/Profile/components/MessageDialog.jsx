@@ -37,10 +37,10 @@ const MessageDialog = ({
   onClose,
   conversationId,
   recipientId,
-  recipientName,
   senderPet,
   receiverPet,
   matingRequestId,
+  tabValue,
 }) => {
   const location = useLocation();
 
@@ -301,7 +301,7 @@ const MessageDialog = ({
           </AvatarGroup>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
-              {recipientName}
+              {user.displayName}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>

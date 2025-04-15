@@ -1,11 +1,11 @@
 // components/ResourcesList.jsx
 import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  Grid 
+import {
+  Box,
+  Typography,
+  Grid
 } from "@mui/material";
-import ResourceCard from "../../Resources/ResourceCard/ResourceCard"; // Assuming this path is correct
+import ResourceCard from "../../Resources/ResourceCard/ResourceCard";
 
 const ResourcesList = ({ resources = [] }) => {
   return (
@@ -13,7 +13,7 @@ const ResourcesList = ({ resources = [] }) => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         Liked Resources
       </Typography>
-      
+
       {resources.length > 0 ? (
         <Grid container spacing={2}>
           {resources.map((resource) => (
@@ -23,12 +23,12 @@ const ResourcesList = ({ resources = [] }) => {
           ))}
         </Grid>
       ) : (
-        <Box 
-          sx={{ 
-            p: 3, 
-            borderRadius: 2, 
+        <Box
+          sx={{
+            p: 3,
+            borderRadius: 2,
             backgroundColor: '#f5f5f5',
-            textAlign: 'center' 
+            textAlign: 'center'
           }}
         >
           <Typography variant="body1" color="text.secondary">

@@ -16,19 +16,18 @@ import {
   CircularProgress,
   Chip,
   Tooltip,
-  AvatarGroup,
+  Button,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import ImageIcon from "@mui/icons-material/Image";
 
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PetsIcon from "@mui/icons-material/Pets";
 import { ref, get, onValue, off, push, set, update } from "firebase/database";
 import { database, auth } from "../../firebase";
+import { InfoIcon } from "lucide-react";
 
 const MessageDialogForAdoption = ({
   open,
@@ -149,6 +148,20 @@ const MessageDialogForAdoption = ({
     if (!newMessage.trim() || !user || !conversationId) return;
 
     try {
+      const convoRef = ref(database, `conversations/${conversationId}`);
+      const convoSnapshot = await get(convoRef);
+
+      if (!convoSnapshot.exists()) {
+        await set(convoRef, {
+          participants: {
+            [user.uid]: true,
+            [recipientId]: true,
+          },
+          createdAt: Date.now(),
+          isAdoption: true,
+        });
+      }
+
       const messagesRef = ref(
         database,
         `conversations/${conversationId}/messages`
@@ -163,30 +176,16 @@ const MessageDialogForAdoption = ({
         read: false,
       });
 
-      const conversationRef = ref(database, `conversations/${conversationId}`);
-      await update(conversationRef, {
+      await update(convoRef, {
         lastMessageText: newMessage,
         lastMessageTimestamp: Date.now(),
-        participants: {
-          [user.uid]: true,
-          [recipientId]: true,
-        },
-        matingRequestId: matingRequestId || null,
+        lastMessageSender: user.uid,
       });
 
-      if (typingTimeout) {
-        clearTimeout(typingTimeout);
-      }
-      const typingRef = ref(
-        database,
-        `conversations/${conversationId}/typing/${user.uid}`
-      );
-      update(typingRef, { typing: false });
-
       setNewMessage("");
+      scrollToBottom();
     } catch (error) {
       console.error("Error sending message:", error);
-      alert("Failed to send message. Please try again.");
     }
   };
 
@@ -263,52 +262,34 @@ const MessageDialogForAdoption = ({
           alignItems: "center",
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
           p: 2,
-          background: "linear-gradient(145deg, #f9f5ff 0%, #ffe6e6 100%)",
+          background: "linear-gradient(145deg, #f9f5ff 0%, #e6f7ff 100%)",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <AvatarGroup sx={{ mr: 2 }}>
-            <Avatar
-              src={senderPet?.image}
-              alt={senderPet?.name}
-              sx={{
-                width: 48,
-                height: 48,
-                border: "3px solid #fff",
-                boxShadow: 2,
-                background: getPetGradient(senderPet?.type),
-              }}
-            >
-              {!senderPet?.image && <PetsIcon />}
-            </Avatar>
-            <Avatar
-              src={receiverPet?.image}
-              alt={receiverPet?.name}
-              sx={{
-                width: 48,
-                height: 48,
-                border: "3px solid #fff",
-                boxShadow: 2,
-                background: getPetGradient(receiverPet?.type),
-              }}
-            >
-              {!receiverPet?.image && <PetsIcon />}
-            </Avatar>
-          </AvatarGroup>
+          <Avatar
+            src={senderPet?.image}
+            alt={senderPet?.name}
+            sx={{
+              width: 48,
+              height: 48,
+              border: "3px solid #fff",
+              boxShadow: 2,
+              background: getPetGradient(senderPet?.type),
+              mr: 2,
+            }}
+          >
+            {!senderPet?.image && <PetsIcon />}
+          </Avatar>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
-              {recipientName}
+              Adoption Inquiry
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              About {senderPet?.name}
             </Typography>
           </Box>
         </Box>
-        <IconButton
-          onClick={onClose}
-          edge="end"
-          sx={{
-            bgcolor: "rgba(0,0,0,0.05)",
-            "&:hover": { bgcolor: "rgba(0,0,0,0.1)" },
-          }}
-        >
+        <IconButton onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -317,34 +298,16 @@ const MessageDialogForAdoption = ({
         <Box
           sx={{
             p: 2,
-            backgroundColor: "rgba(251, 226, 244, 0.3)",
+            backgroundColor: "rgba(225, 245, 254, 0.5)",
             borderBottom: "1px solid rgba(0,0,0,0.08)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <FavoriteIcon color="secondary" sx={{ mr: 1.5 }} />
-            <Box>
-              <Typography variant="subtitle2">
-                Mating Request:{" "}
-                {matingRequest.status === "accepted" ? "Accepted" : "Pending"}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                Requested on{" "}
-                {new Date(matingRequest.createdAt).toLocaleDateString()}
-              </Typography>
-            </Box>
+            <InfoIcon color="primary" sx={{ mr: 1.5 }} />
+            <Typography variant="subtitle2">
+              You're inquiring about adopting {senderPet?.name}
+            </Typography>
           </Box>
-          {matingRequest.status === "accepted" && (
-            <Chip
-              icon={<CheckCircleIcon />}
-              label="Accepted"
-              color="success"
-              size="small"
-            />
-          )}
         </Box>
       )}
 
@@ -385,7 +348,7 @@ const MessageDialogForAdoption = ({
             }}
           >
             <Typography variant="h6" align="center" gutterBottom>
-              Start Your Conversation
+              Start Your Adoption Inquiry
             </Typography>
             <Typography
               variant="body2"
@@ -393,8 +356,39 @@ const MessageDialogForAdoption = ({
               align="center"
               sx={{ maxWidth: 400 }}
             >
-              This is the beginning of your conversation about the Adopt Pet.
+              This is the beginning of your conversation about adopting{" "}
+              {senderPet?.name}.
             </Typography>
+            <Box
+              sx={{
+                mt: 4,
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: "rgba(0,0,0,0.03)",
+              }}
+            >
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ textAlign: "center" }}
+              >
+                "Hello! I'm interested in adopting {senderPet?.name}. Could you
+                tell me more about them?"
+              </Typography>
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                sx={{ mt: 2, display: "block", mx: "auto" }}
+                onClick={() => {
+                  setNewMessage(
+                    `Hello! I'm interested in adopting ${senderPet?.name}. Could you tell me more about them?`
+                  );
+                }}
+              >
+                Use Suggestion
+              </Button>
+            </Box>
           </Box>
         ) : (
           <>

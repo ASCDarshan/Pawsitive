@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 
-// Home Icon
 const HomeIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +19,6 @@ const HomeIcon = () => (
   </svg>
 );
 
-// Dog Icon - More dog-like shape
 const DogIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +36,6 @@ const DogIcon = () => (
   </svg>
 );
 
-// Cat Icon - More cat-like shape
 const CatIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +53,6 @@ const CatIcon = () => (
   </svg>
 );
 
-// Profile Icon
 const ProfileIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +70,6 @@ const ProfileIcon = () => (
   </svg>
 );
 
-// Logout Icon
 const LogoutIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

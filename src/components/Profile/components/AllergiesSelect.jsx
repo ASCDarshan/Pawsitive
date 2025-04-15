@@ -1,24 +1,22 @@
 // components/Profile/components/AllergiesSelect.jsx
 import React from 'react';
-import { 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
-  TextField, 
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
   Box,
   Chip,
   OutlinedInput
 } from "@mui/material";
 
-// Common allergies for pets
 const COMMON_ALLERGIES = [
-  'Beef', 'Chicken', 'Dairy', 'Dust Mites', 'Eggs', 'Fish', 'Fleas', 
+  'Beef', 'Chicken', 'Dairy', 'Dust Mites', 'Eggs', 'Fish', 'Fleas',
   'Grain', 'Grass', 'Lamb', 'Mold', 'Pollen', 'Pork', 'Soy', 'Wheat'
 ];
 
 const AllergiesSelect = ({ value = [], onChange, otherValue, onOtherChange }) => {
-  // Check if "Other" is selected
   const isOtherSelected = value.includes('Other');
 
   const handleChange = (event) => {
@@ -53,8 +51,7 @@ const AllergiesSelect = ({ value = [], onChange, otherValue, onOtherChange }) =>
           <MenuItem value="Other">Other</MenuItem>
         </Select>
       </FormControl>
-      
-      {/* Show text field for "Other" allergy input */}
+
       {isOtherSelected && (
         <TextField
           label="Specify Other Allergies"

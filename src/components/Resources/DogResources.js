@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../Loaders/SkeletonLoader";
 
-// Dog resource categories with consistent lavender styling
+const style = document.createElement("style");
+style.textContent = `
+  .border-l-3 {
+    border-left-width: 3px;
+  }
+`;
+document.head.appendChild(style);
+
 const dogResourceCategories = [
   {
     id: "dog_health",
@@ -332,7 +339,6 @@ const DogResources = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Resource 1 */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
               <div className="p-4 border-l-3 border-lavender-500 flex-grow">
                 <div className="flex items-center mb-3">
@@ -370,7 +376,6 @@ const DogResources = () => {
               </div>
             </div>
 
-            {/* Resource 2 */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
               <div className="p-4 border-l-3 border-lavender-500 flex-grow">
                 <div className="flex items-center mb-3">
@@ -406,7 +411,6 @@ const DogResources = () => {
               </div>
             </div>
 
-            {/* Resource 3 */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
               <div className="p-4 border-l-3 border-lavender-500 flex-grow">
                 <div className="flex items-center mb-3">
@@ -445,7 +449,6 @@ const DogResources = () => {
         </div>
       </div>
 
-      {/* Find Nearby Dog Resources */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col md:flex-row items-center border border-lavender-200">
           <div className="md:w-2/3 mb-6 md:mb-0 md:pr-8">
@@ -476,14 +479,5 @@ const DogResources = () => {
     </div>
   );
 };
-
-// Add support for the border-l-3 class
-const style = document.createElement("style");
-style.textContent = `
-  .border-l-3 {
-    border-left-width: 3px;
-  }
-`;
-document.head.appendChild(style);
 
 export default DogResources;

@@ -250,7 +250,7 @@ const PetDialog = ({
         });
       }
     }
-  }, [currentPet?.id]);
+  }, [currentPet, currentPet.id, setCurrentPet]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
