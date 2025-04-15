@@ -3,41 +3,43 @@ import React from "react";
 import { motion } from "framer-motion";
 import AdoptionCard from "./AdoptionCard";
 
-const AdoptionSection = () => {
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const adoptionCards = [
-    {
-      emoji: "🐶",
-      title: "Adopt a Pet",
-      description: "Browse through available pets looking for a loving home. Find the perfect companion for your family.",
-      buttonText: "Find Adoptable Pets",
-      route: "/adopt-pets",
-      gradientFrom: "pink-200",
-      gradientTo: "lavender-400",
-      buttonGradientFrom: "lavender-600",
-      buttonGradientTo: "lavender-700"
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
     },
-    {
-      emoji: "🐱",
-      title: "Share Your Pet",
-      description: "Need to find a new home for your pet? List them on our platform to connect with caring adopters.",
-      buttonText: "Share Pet for Adoption",
-      route: "/adoption/new",
-      gradientFrom: "pink-200",
-      gradientTo: "lavender-400",
-      buttonGradientFrom: "lavender-600",
-      buttonGradientTo: "lavender-700"
-    }
-  ];
+  },
+};
+
+const adoptionCards = [
+  {
+    emoji: "🐶",
+    title: "Adopt a Pet",
+    description:
+      "Browse through available pets looking for a loving home. Find the perfect companion for your family.",
+    buttonText: "Find Adoptable Pets",
+    route: "/adopt-pets",
+    gradientFrom: "pink-200",
+    gradientTo: "lavender-400",
+    buttonGradientFrom: "lavender-600",
+    buttonGradientTo: "lavender-700",
+  },
+  {
+    emoji: "🐾",
+    title: "Find a Mate for Your Pet",
+    description:
+      "Looking for a companion for your pet? Connect with nearby pet owners for safe and responsible mating.",
+    buttonText: "Find Mating Partner",
+    route: "/nearby-mates",
+    gradientFrom: "pink-200",
+    gradientTo: "lavender-400",
+    buttonGradientFrom: "lavender-600",
+    buttonGradientTo: "lavender-700",
+  },
+];
+const AdoptionSection = () => {
 
   return (
     <div className="bg-gradient-to-b from-pink-50 to-lavender-50 pt-28 pb-16 mt-8 rounded-t-[40px]">
@@ -49,9 +51,12 @@ const AdoptionSection = () => {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-lavender-900 mb-3">Find Your New Best Friend</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-lavender-900 mb-3">
+            Find Your New Best Friend
+          </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Browse pets available for adoption or share your own pet for adoption. Help pets find their forever homes!
+            Browse pets available for adoption or share your own pet for
+            adoption. Help pets find their forever homes!
           </p>
         </motion.div>
 

@@ -153,7 +153,6 @@ const ResourceList = () => {
     );
   };
 
-  // Determine if this is a dog or cat category
   const isPetType = (type) => {
     return category?.startsWith(type);
   };
@@ -161,18 +160,14 @@ const ResourceList = () => {
   const isDogCategory = isPetType("dog_");
   const isCatCategory = isPetType("cat_");
 
-  // Set color theme based on category type
   const themeColor = isDogCategory
     ? "blue"
     : isCatCategory
     ? "amber"
     : "lavender";
 
-  // Get category name
   const getCategoryName = () => {
-    // Remove the prefix and replace underscores with spaces
     let name = category?.replace(/^(dog_|cat_)/, "").replace(/_/g, " ");
-    // Capitalize first letter of each word
     if (name) {
       name = name
         .split(" ")
@@ -230,7 +225,6 @@ const ResourceList = () => {
     </div>
   );
 
-  // Force refresh map data
   const refreshMapData = () => {
     setMapLoading(true);
     if (mapComponentRef.current && mapComponentRef.current.requestLocation) {
@@ -243,7 +237,6 @@ const ResourceList = () => {
       className={`min-h-screen bg-${themeColor}-50 p-4 sm:p-6 pb-16 sm:pb-6`}
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header with back button */}
         <div className="mb-6">
           <button
             onClick={() =>
@@ -284,7 +277,6 @@ const ResourceList = () => {
           </p>
         </div>
 
-        {/* View mode toggle */}
         <div
           className={`bg-white rounded-lg shadow-md p-4 mb-6 flex flex-wrap gap-4 justify-between items-center`}
         >
@@ -383,7 +375,6 @@ const ResourceList = () => {
           </div>
         </div>
 
-        {/* Hidden Googlemap component that always loads resources regardless of view mode */}
         <div className="hidden">
           <Googlemap
             ref={mapComponentRef}

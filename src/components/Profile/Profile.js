@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // Profile.jsx - Redesigned component
 import React, { useEffect, useState } from "react";
 import {
@@ -32,6 +33,7 @@ import {
 } from "firebase/firestore";
 import { ref, set, get, update, remove } from "firebase/database";
 import { useNavigate } from "react-router-dom";
+import ArrowforwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import PetsIcon from "@mui/icons-material/Pets";
@@ -51,7 +53,6 @@ import VaccinationDialog from "./components/VaccinationDialog";
 import MessageDialog from "./components/MessageDialog";
 import ConversationsList from "./components/ConversationsList";
 
-// Tab Panel component
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -69,6 +70,7 @@ function TabPanel(props) {
 }
 
 const Profile = () => {
+  const navigate = useNavigate();
   const user = auth.currentUser;
   const [likedResources, setLikedResources] = useState([]);
   const [comments, setComments] = useState([]);
@@ -85,7 +87,6 @@ const Profile = () => {
     petId: "",
     receiverPetId: "",
   });
-
   const [currentPet, setCurrentPet] = useState({
     id: "",
     name: "",
@@ -119,7 +120,6 @@ const Profile = () => {
   });
 
   const [vaccinationEditIndex, setVaccinationEditIndex] = useState(-1);
-  const navigate = useNavigate();
 
   const fetchLikedResources = async () => {
     if (!user) return;
@@ -691,7 +691,7 @@ const Profile = () => {
           <Badge badgeContent={pendingRequestsCount} color="error">
             <Chip
               icon={<NotificationsIcon />}
-              label={`${pendingRequestsCount} Pending Requests`}
+              label={`Pending Requests`}
               color={pendingRequestsCount > 0 ? "primary" : "default"}
               onClick={() => setProfileTabValue(2)}
               sx={{ display: { xs: "none", sm: "flex" } }}
@@ -730,7 +730,11 @@ const Profile = () => {
               label="Mating Requests"
               id="profile-tab-2"
             />
-            <Tab icon={<MessageIcon />} label="Comments" id="profile-tab-3" />
+            <Tab
+              icon={<MessageIcon />}
+              label="Adoption Messages"
+              id="profile-tab-3"
+            />
           </Tabs>
         </Box>
 
@@ -920,7 +924,7 @@ const Profile = () => {
                         </>
                       ) : (
                         <>
-                          <ArrowBackIcon fontSize="small" sx={{ mr: 0.5 }} />
+                          <ArrowforwardIcon fontSize="small" sx={{ mr: 0.5 }} />
                           Sent
                         </>
                       )}
@@ -1027,7 +1031,7 @@ const Profile = () => {
                         </Box>
                       </Box>
 
-                      <CardContent sx={{ width: "60%" }}>
+                      <CardContent sx={{ width: "60%", mt: 3 }}>
                         <Typography variant="h6" component="div" sx={{ mb: 1 }}>
                           {request.direction === "incoming"
                             ? `${request.senderPetName} ➔ ${request.receiverPetName}`
@@ -1119,12 +1123,14 @@ const Profile = () => {
                           </Button>
                         )}
 
-                        <IconButton
-                          size="small"
-                          onClick={(e) => handleRequestMenuOpen(e, request)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
+                        {request.status === "accepted" && (
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleRequestMenuOpen(e, request)}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        )}
                       </Box>
                     </Box>
                   </Card>
@@ -1205,8 +1211,8 @@ const Profile = () => {
           recipientId={currentMessage.recipientId}
           recipientName={currentMessage.recipientName}
           senderPet={currentMessage.senderPet}
-          receiverPet={currentMessage.receiverPet}
           matingRequestId={currentMessage.matingRequestId}
+          tabValue={tabValue}
         />
 
         <Menu

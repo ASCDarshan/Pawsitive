@@ -1,17 +1,16 @@
 // components/Profile/components/MedicalConditionsSelect.jsx
 import React from 'react';
-import { 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
-  TextField, 
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
   Box,
   Chip,
   OutlinedInput
 } from "@mui/material";
 
-// Common medical conditions for pets
 const COMMON_CONDITIONS = [
   'Allergies', 'Arthritis', 'Asthma', 'Cancer', 'Cataracts', 'Dental Disease',
   'Diabetes', 'Ear Infections', 'Epilepsy', 'Heart Disease', 'Hip Dysplasia',
@@ -19,7 +18,6 @@ const COMMON_CONDITIONS = [
 ];
 
 const MedicalConditionsSelect = ({ value = [], onChange, otherValue, onOtherChange }) => {
-  // Check if "Other" is selected
   const isOtherSelected = value.includes('Other');
 
   const handleChange = (event) => {
@@ -54,8 +52,7 @@ const MedicalConditionsSelect = ({ value = [], onChange, otherValue, onOtherChan
           <MenuItem value="Other">Other</MenuItem>
         </Select>
       </FormControl>
-      
-      {/* Show text field for "Other" condition input */}
+
       {isOtherSelected && (
         <TextField
           label="Specify Other Conditions"

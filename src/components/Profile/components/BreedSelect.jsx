@@ -1,15 +1,14 @@
 // components/BreedSelect.jsx
 import React from 'react';
-import { 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   FormHelperText,
   TextField
 } from "@mui/material";
 
-// Dog breeds list
 const DOG_BREEDS = [
   'Affenpinscher', 'Afghan Hound', 'Airedale Terrier', 'Akita', 'Alaskan Malamute',
   'American Bulldog', 'American Eskimo Dog', 'American Foxhound', 'American Pit Bull Terrier',
@@ -35,7 +34,6 @@ const DOG_BREEDS = [
   'West Highland White Terrier', 'Whippet', 'Yorkshire Terrier'
 ];
 
-// Cat breeds list
 const CAT_BREEDS = [
   'Abyssinian', 'American Bobtail', 'American Curl', 'American Shorthair', 'American Wirehair',
   'Balinese', 'Bengal', 'Birman', 'Bombay', 'British Shorthair', 'Burmese', 'Chartreux',
@@ -47,12 +45,10 @@ const CAT_BREEDS = [
 ];
 
 const BreedSelect = ({ petType, value, onChange, otherValue, onOtherChange, error }) => {
-  // Determine which breed list to use based on pet type
-  const breedList = petType === 'dog' ? DOG_BREEDS : 
-                   petType === 'cat' ? CAT_BREEDS : 
-                   [];
-  
-  // Check if "Other" is selected
+  const breedList = petType === 'dog' ? DOG_BREEDS :
+    petType === 'cat' ? CAT_BREEDS :
+      [];
+
   const isOtherSelected = value === 'Other';
 
   return (
@@ -79,8 +75,7 @@ const BreedSelect = ({ petType, value, onChange, otherValue, onOtherChange, erro
         </Select>
         {error && <FormHelperText>{error}</FormHelperText>}
       </FormControl>
-      
-      {/* Show text field for "Other" breed input */}
+
       {isOtherSelected && (
         <TextField
           label="Specify Breed"

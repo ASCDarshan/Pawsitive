@@ -60,7 +60,6 @@ const PetDetail = () => {
       }
 
       try {
-        // Search for the pet across all users
         const allUserPetsRef = ref(database, "userPets");
         const snapshot = await get(allUserPetsRef);
 
@@ -69,7 +68,6 @@ const PetDetail = () => {
           let foundPet = null;
           let ownerId = null;
 
-          // Loop through all users to find the pet with matching ID
           Object.entries(allUserPets).forEach(([userId, pets]) => {
             if (pets[petId]) {
               foundPet = { ...pets[petId], id: petId, userId };
@@ -80,7 +78,6 @@ const PetDetail = () => {
           if (foundPet) {
             setPet(foundPet);
 
-            // Fetch pet owner info
             if (ownerId) {
               const userRef = ref(database, `users/${ownerId}`);
               const userSnapshot = await get(userRef);
@@ -92,7 +89,6 @@ const PetDetail = () => {
               }
             }
 
-            // Fetch current user's pets for mating request
             if (user && user.uid) {
               const userPetsRef = ref(database, `userPets/${user.uid}`);
               const userPetsSnapshot = await get(userPetsRef);
@@ -104,7 +100,6 @@ const PetDetail = () => {
                   ...petsData[id],
                 }));
 
-                // Filter pets of the same type but opposite gender
                 const compatiblePets = petsArray.filter(
                   (userPet) =>
                     userPet.type === foundPet.type &&
@@ -271,7 +266,6 @@ const PetDetail = () => {
           background: theme.palette.primary.light,
         }}
       >
-        {/* Header with back button */}
         <Box
           sx={{
             p: { xs: 2, sm: 3 },
@@ -290,7 +284,6 @@ const PetDetail = () => {
         </Box>
 
         <Grid container spacing={0}>
-          {/* Pet Image */}
           <Grid item xs={12} md={5}>
             <Card
               elevation={0}
@@ -312,7 +305,6 @@ const PetDetail = () => {
             </Card>
           </Grid>
 
-          {/* Pet Details */}
           <Grid item xs={12} md={7}>
             <Box
               sx={{
@@ -323,7 +315,6 @@ const PetDetail = () => {
                 flexDirection: "column",
               }}
             >
-              {/* Pet name and availability chip */}
               <Box
                 display="flex"
                 alignItems="center"
@@ -347,7 +338,6 @@ const PetDetail = () => {
                 )}
               </Box>
 
-              {/* Pet breed and type */}
               <Box display="flex" alignItems="center" gap={1} mb={2}>
                 <PetsIcon color="primary" />
                 <Typography variant="h6">
@@ -358,9 +348,7 @@ const PetDetail = () => {
 
               <Divider sx={{ my: 2 }} />
 
-              {/* Pet details grid */}
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                {/* Gender */}
                 <Grid item xs={6} sm={4}>
                   <Box display="flex" alignItems="center">
                     {pet.gender === "Male" ? (
@@ -372,7 +360,6 @@ const PetDetail = () => {
                   </Box>
                 </Grid>
 
-                {/* Age */}
                 <Grid item xs={6} sm={4}>
                   <Box display="flex" alignItems="center">
                     <CakeIcon
@@ -384,7 +371,6 @@ const PetDetail = () => {
                   </Box>
                 </Grid>
 
-                {/* Weight */}
                 <Grid item xs={6} sm={4}>
                   <Box display="flex" alignItems="center">
                     <ScaleIcon
@@ -396,7 +382,6 @@ const PetDetail = () => {
                   </Box>
                 </Grid>
 
-                {/* Color */}
                 {pet.color && (
                   <Grid item xs={6} sm={4}>
                     <Box display="flex" alignItems="center">
@@ -408,7 +393,6 @@ const PetDetail = () => {
                   </Grid>
                 )}
 
-                {/* Location (distance) */}
                 {pet.distance && (
                   <Grid item xs={6} sm={4}>
                     <Box display="flex" alignItems="center">
@@ -421,7 +405,6 @@ const PetDetail = () => {
                 )}
               </Grid>
 
-              {/* Description */}
               {pet.description && (
                 <Box mb={3}>
                   <Box display="flex" alignItems="center" mb={1}>
@@ -436,7 +419,6 @@ const PetDetail = () => {
                 </Box>
               )}
 
-              {/* Medical Information */}
               {pet.medical && pet.medical.medications && (
                 <Box mb={3}>
                   <Box display="flex" alignItems="center" mb={1}>
@@ -451,7 +433,6 @@ const PetDetail = () => {
                 </Box>
               )}
 
-              {/* Pet Owner Information */}
               <Box sx={{ mt: "auto", pt: 2 }}>
                 <Divider sx={{ mb: 2 }} />
                 <Box
@@ -470,7 +451,6 @@ const PetDetail = () => {
                     </Typography>
                   </Box>
 
-                  {/* Mating Request Button - only show if not the user's own pet */}
                   {user &&
                     pet.userId !== user.uid &&
                     pet.availableForMating && (
@@ -495,7 +475,6 @@ const PetDetail = () => {
         </Grid>
       </Paper>
 
-      {/* Mating Request Dialog */}
       {openMatingRequestDialog && (
         <MatingRequestDialog
           open={openMatingRequestDialog}

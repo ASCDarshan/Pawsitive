@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SkeletonLoader } from "../../components/Loaders";
 
-// Cat resource categories with consistent lavender styling
+const style = document.createElement("style");
+style.textContent = `
+  .border-l-3 {
+    border-left-width: 3px;
+  }
+`;
+document.head.appendChild(style);
+
 const catResourceCategories = [
   {
     id: "cat_health",
@@ -160,7 +167,6 @@ const CatResources = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check if viewport is mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -168,7 +174,6 @@ const CatResources = () => {
     checkMobile();
     window.addEventListener("resize", checkMobile);
 
-    // Simulating resource categories fetching
     setTimeout(() => {
       setLoading(false);
     }, 800);
@@ -205,7 +210,6 @@ const CatResources = () => {
 
   return (
     <div className="min-h-screen bg-lavender-50">
-      {/* Header */}
       <div className="bg-lavender-700 text-white py-8">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center mb-3">
@@ -236,7 +240,6 @@ const CatResources = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-3">
           <div className="relative">
@@ -291,7 +294,6 @@ const CatResources = () => {
         </div>
       </div>
 
-      {/* Mobile Category Selector */}
       {isMobile && !searchTerm && (
         <div className="sticky top-14 z-10 bg-lavender-50 pt-4 pb-2 px-6 -mx-6">
           <MobileCategorySelector
@@ -304,7 +306,6 @@ const CatResources = () => {
         </div>
       )}
 
-      {/* Categories Grid */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         {!isMobile && (
           <h2 className="text-xl font-bold text-lavender-900 mb-6">
@@ -338,7 +339,6 @@ const CatResources = () => {
         )}
       </div>
 
-      {/* Featured Resources Section */}
       <div className="bg-lavender-100/50 py-8">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-xl font-bold text-lavender-900 mb-6">
@@ -346,7 +346,6 @@ const CatResources = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Featured Resource 1 */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
               <div className="p-4 border-l-3 border-lavender-500 flex-grow">
                 <div className="flex items-center mb-3">
@@ -384,7 +383,6 @@ const CatResources = () => {
               </div>
             </div>
 
-            {/* Featured Resource 2 */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
               <div className="p-4 border-l-3 border-lavender-500 flex-grow">
                 <div className="flex items-center mb-3">
@@ -420,7 +418,6 @@ const CatResources = () => {
               </div>
             </div>
 
-            {/* Featured Resource 3 */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
               <div className="p-4 border-l-3 border-lavender-500 flex-grow">
                 <div className="flex items-center mb-3">
@@ -459,7 +456,6 @@ const CatResources = () => {
         </div>
       </div>
 
-      {/* Find Nearby Cat Resources */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col md:flex-row items-center border border-lavender-200">
           <div className="md:w-2/3 mb-6 md:mb-0 md:pr-8">
@@ -490,14 +486,5 @@ const CatResources = () => {
     </div>
   );
 };
-
-// Add support for the border-l-3 class
-const style = document.createElement("style");
-style.textContent = `
-  .border-l-3 {
-    border-left-width: 3px;
-  }
-`;
-document.head.appendChild(style);
 
 export default CatResources;

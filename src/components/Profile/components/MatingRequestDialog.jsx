@@ -22,7 +22,6 @@ const MatingRequestDialog = ({
   receiverPet,
   receiverOwner
 }) => {
-  console.log(senderPet, receiverPet, receiverOwner);
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -99,7 +98,6 @@ const MatingRequestDialog = ({
               }}
             />
 
-            {/* Receiver pet */}
             <Box sx={{ textAlign: 'center' }}>
               <Avatar
                 src={receiverPet?.image}
@@ -110,10 +108,10 @@ const MatingRequestDialog = ({
                 {receiverPet?.name}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                {receiverOwner?.displayName}'s pet ({receiverPet?.gender})
+                {/* {receiverOwner?.displayName}'s pet ({receiverPet?.gender}) */}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                {receiverPet?.breed}
+                {receiverPet?.breed || "Owner's Pet"}
               </Typography>
             </Box>
           </Box>

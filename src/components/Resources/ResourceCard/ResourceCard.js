@@ -1,3 +1,4 @@
+/* eslint-disable no-lone-blocks */
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -49,11 +50,6 @@ const ResourceCard = ({ resource, onResourceUpdated }) => {
     const checkIfOpen = () => {
       const now = new Date();
       const currentDay = now.toLocaleDateString("en-US", { weekday: "long" });
-      const currentTime = now.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      });
 
       let hoursText = "";
 
@@ -185,7 +181,7 @@ const ResourceCard = ({ resource, onResourceUpdated }) => {
       console.error("Error fetching comments:", error);
       setComments([]);
     }
-  }, [resource.id]);
+  }, [resource]);
 
   useEffect(() => {
     if (resource.id) {

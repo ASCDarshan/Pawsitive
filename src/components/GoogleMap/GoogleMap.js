@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   GoogleMap,
@@ -317,11 +318,9 @@ const Googlemap = React.forwardRef(
     const [searchQuery, setSearchQuery] = useState("");
     const searchedPlaces = useRef(new Set());
 
-    // Get API key from environment variable or use a default key for testing
     const googleMapsApiKey =
       process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY_HERE";
 
-    // Log API key (but mask it for security)
     useEffect(() => {
       const maskedKey =
         googleMapsApiKey?.substring(0, 4) +
@@ -341,7 +340,6 @@ const Googlemap = React.forwardRef(
       libraries: libraries,
     });
 
-    // Log Maps loading status
     useEffect(() => {
       console.log(
         "Google Maps loading status:",
@@ -353,24 +351,19 @@ const Googlemap = React.forwardRef(
       }
     }, [isLoaded, loadError]);
 
-    // Improved relevance score calculation with more accurate category matching and search query prioritization
     const calculateRelevanceScore = (place, keyword) => {
       let score = 0;
 
-      // Name matching - more weight for exact matches
       const placeName = place.name.toLowerCase();
       const keywordLower = keyword.toLowerCase();
 
-      // If we have a search query, prioritize places that match it
       if (searchQuery && searchQuery.trim() !== "") {
         const searchTerms = searchQuery.toLowerCase().split(/\s+/);
 
-        // Huge bonus if ALL search terms are in the name
         if (searchTerms.every((term) => placeName.includes(term))) {
           score += 50;
         }
 
-        // Additional points for each search term found
         searchTerms.forEach((term) => {
           if (placeName.includes(term)) {
             score += 10;
@@ -379,16 +372,14 @@ const Googlemap = React.forwardRef(
       }
 
       if (placeName === keywordLower) {
-        score += 30; // Exact match gets highest score
+        score += 30;
       } else if (placeName.includes(keywordLower)) {
-        score += 15; // Partial match
+        score += 15;
       }
 
-      // Specific service type checking based on search query
       if (searchQuery) {
         const searchQueryLower = searchQuery.toLowerCase();
 
-        // Dog trainers
         if (
           searchQueryLower.includes("trainer") ||
           searchQueryLower.includes("training")
@@ -401,11 +392,10 @@ const Googlemap = React.forwardRef(
           ) {
             score += 40;
           } else {
-            score -= 20; // Penalize non-trainer places when specifically searching for trainers
+            score -= 20;
           }
         }
 
-        // Dog walkers
         if (
           searchQueryLower.includes("walker") ||
           searchQueryLower.includes("walking")
@@ -413,11 +403,10 @@ const Googlemap = React.forwardRef(
           if (placeName.includes("walker") || placeName.includes("walking")) {
             score += 40;
           } else {
-            score -= 20; // Penalize non-walker places when specifically searching for walkers
+            score -= 20;
           }
         }
 
-        // Groomers
         if (searchQueryLower.includes("groom")) {
           if (placeName.includes("groom")) {
             score += 40;
@@ -426,7 +415,6 @@ const Googlemap = React.forwardRef(
           }
         }
 
-        // Vets/Veterinarians
         if (
           searchQueryLower.includes("vet") ||
           searchQueryLower.includes("clinic") ||
@@ -447,7 +435,6 @@ const Googlemap = React.forwardRef(
         }
       }
 
-      // Original category-specific checks
       if (
         category === "dog_services" &&
         (placeName.includes("walker") ||
@@ -471,7 +458,6 @@ const Googlemap = React.forwardRef(
         score += 20;
       }
 
-      // Check for health-related keywords
       if (
         category?.includes("_health") &&
         (placeName.includes("vet") ||
@@ -483,14 +469,12 @@ const Googlemap = React.forwardRef(
         score += 20;
       }
 
-      // Rating score
       if (place.rating) {
         score += place.rating * 2;
       }
 
-      // User ratings total - more ratings means more confidence
       if (place.user_ratings_total) {
-        score += Math.min(place.user_ratings_total / 50, 10); // Increased weight for popular places
+        score += Math.min(place.user_ratings_total / 50, 10);
       }
 
       return score;
@@ -526,15 +510,12 @@ const Googlemap = React.forwardRef(
               maxWidth: 400,
             });
 
-            // Enhanced resource type determination with search query awareness
             let resourceType = "Establishment";
             const name = placeDetails.name.toLowerCase();
             const types = placeDetails.types || [];
 
-            // First check for search query-specific resource types
             if (searchQuery) {
               const searchQueryLower = searchQuery.toLowerCase();
-              // Dog trainers
               if (
                 searchQueryLower.includes("trainer") ||
                 searchQueryLower.includes("training")
@@ -546,26 +527,20 @@ const Googlemap = React.forwardRef(
                 ) {
                   resourceType = "Dog Trainer";
                 }
-              }
-              // Dog walkers
-              else if (
+              } else if (
                 searchQueryLower.includes("walker") ||
                 searchQueryLower.includes("walking")
               ) {
                 if (name.includes("walk")) {
                   resourceType = "Dog Walker";
                 }
-              }
-              // Groomers
-              else if (searchQueryLower.includes("groom")) {
+              } else if (searchQueryLower.includes("groom")) {
                 if (name.includes("groom")) {
                   resourceType = category?.startsWith("dog")
                     ? "Dog Groomer"
                     : "Cat Groomer";
                 }
-              }
-              // Vets
-              else if (
+              } else if (
                 searchQueryLower.includes("vet") ||
                 searchQueryLower.includes("clinic") ||
                 searchQueryLower.includes("hospital")
@@ -582,9 +557,7 @@ const Googlemap = React.forwardRef(
               }
             }
 
-            // If no specific search match, use category and place type logic
             if (resourceType === "Establishment") {
-              // Categorize health resources
               if (
                 types.includes("veterinary_care") ||
                 name.includes("vet") ||
@@ -592,9 +565,7 @@ const Googlemap = React.forwardRef(
                 name.includes("hospital")
               ) {
                 resourceType = "Veterinarian";
-              }
-              // Categorize dog services
-              else if (category === "dog_services") {
+              } else if (category === "dog_services") {
                 if (name.includes("walk") || name.includes("walker")) {
                   resourceType = "Dog Walker";
                 } else if (
@@ -612,9 +583,7 @@ const Googlemap = React.forwardRef(
                 } else if (types.includes("park") || name.includes("park")) {
                   resourceType = "Dog Park";
                 }
-              }
-              // Categorize cat services
-              else if (category === "cat_services") {
+              } else if (category === "cat_services") {
                 if (name.includes("sit") || name.includes("sitter")) {
                   resourceType = "Cat Sitter";
                 } else if (name.includes("groom")) {
@@ -622,13 +591,9 @@ const Googlemap = React.forwardRef(
                 } else if (name.includes("board") || name.includes("hotel")) {
                   resourceType = "Cat Boarding";
                 }
-              }
-              // Categorize nutrition and food
-              else if (category?.includes("_nutrition")) {
+              } else if (category?.includes("_nutrition")) {
                 resourceType = "Pet Food Store";
-              }
-              // Categorize supplies
-              else if (category?.includes("_supplies")) {
+              } else if (category?.includes("_supplies")) {
                 resourceType = "Pet Supplies";
               }
             }
@@ -653,8 +618,8 @@ const Googlemap = React.forwardRef(
               types: placeDetails.types || [],
               rating: placeDetails.rating || 0,
               userRatingsTotal: placeDetails.user_ratings_total || 0,
-              category: category, // Make sure to include the category
-              type: resourceType, // Add the determined resource type
+              category: category,
+              type: resourceType,
             };
 
             resolve(formattedResource);
@@ -668,11 +633,9 @@ const Googlemap = React.forwardRef(
 
     const performSearch = async (service, location, keyword) => {
       return new Promise((resolve) => {
-        // Adjust request based on search query
         let type =
           categoryTypes[category?.toLowerCase()]?.[0] || "establishment";
 
-        // If we have a specific search query for a service type, adjust the search parameters
         if (searchQuery) {
           const searchQueryLower = searchQuery.toLowerCase();
           if (
@@ -687,7 +650,7 @@ const Googlemap = React.forwardRef(
 
         const request = {
           location: new window.google.maps.LatLng(location.lat, location.lng),
-          radius: 10000, // Using radius instead of rankBy
+          radius: 10000,
           keyword: keyword,
           type: type,
         };
@@ -708,7 +671,6 @@ const Googlemap = React.forwardRef(
       });
     };
 
-    // Enhanced filter function for more precise search results
     const filterBySearchQuery = (resources, query) => {
       if (!query || query.trim() === "") {
         return resources;
@@ -716,28 +678,22 @@ const Googlemap = React.forwardRef(
 
       const queryTerms = query.toLowerCase().trim().split(/\s+/);
 
-      // First, try to find exact matches for specific service types
       const exactTypeMatches = resources.filter((resource) => {
         const type = resource.type.toLowerCase();
-        // Look for exact type matches first
         return (
           queryTerms.join(" ") === type || type.includes(queryTerms.join(" "))
         );
       });
 
-      // If we found exact matches, return those
       if (exactTypeMatches.length > 0) {
         return exactTypeMatches;
       }
 
-      // Otherwise, use more general matching
       return resources.filter((resource) => {
         const name = resource.name.toLowerCase();
         const type = resource.type.toLowerCase();
         const address = resource.address.toLowerCase();
 
-        // Check if ALL query terms are in either name, type, or address
-        // This makes searching for "dog trainer" only return results containing both words
         return queryTerms.every(
           (term) =>
             name.includes(term) || type.includes(term) || address.includes(term)
@@ -750,7 +706,6 @@ const Googlemap = React.forwardRef(
         setLoadingResources(true);
         setResourcesError(null);
 
-        // Check if Google Maps is loaded
         if (!window.google || !window.google.maps) {
           console.error("Google Maps not loaded");
           setResourcesError(
@@ -758,10 +713,8 @@ const Googlemap = React.forwardRef(
           );
           setLoadingResources(false);
 
-          // Use mock data as fallback
           const mockData = mockResources[category?.toLowerCase()] || [];
 
-          // Apply search query filter if needed
           const filteredMockData =
             searchQuery && searchQuery.trim() !== ""
               ? filterBySearchQuery(mockData, searchQuery)
@@ -783,13 +736,10 @@ const Googlemap = React.forwardRef(
         searchedPlaces.current.clear();
 
         try {
-          // Determine search keywords based on search query
           let searchKeywords;
           if (searchQuery && searchQuery.trim() !== "") {
-            // Use the search query as the primary keyword
             searchKeywords = [searchQuery];
 
-            // Also add some related terms based on the query for better results
             const searchQueryLower = searchQuery.toLowerCase();
             if (
               searchQueryLower.includes("trainer") ||
@@ -826,7 +776,6 @@ const Googlemap = React.forwardRef(
                 "cat grooming"
               );
             } else {
-              // Only add category keywords as secondary if search is not specific
               searchKeywords = [...searchKeywords, ...keywords];
             }
           } else {
@@ -849,14 +798,13 @@ const Googlemap = React.forwardRef(
                   allResults.set(place.place_id, {
                     place,
                     relevanceScore,
-                    keyword, // Store the keyword that found this place
+                    keyword,
                   });
                 }
               }
             }
           }
 
-          // Sort and limit results
           const sortedResults = Array.from(allResults.values())
             .sort((a, b) => b.relevanceScore - a.relevanceScore)
             .slice(0, 20);
@@ -865,7 +813,6 @@ const Googlemap = React.forwardRef(
             `Found ${sortedResults.length} unique places after processing`
           );
 
-          // Fetch details for top results
           const detailedResources = await Promise.all(
             sortedResults.map(({ place }) => fetchPlaceDetails(service, place))
           );
@@ -881,7 +828,6 @@ const Googlemap = React.forwardRef(
             );
             const mockData = mockResources[category?.toLowerCase()] || [];
 
-            // If we have a specific search query, filter the mock data too
             const filteredMockData =
               searchQuery && searchQuery.trim() !== ""
                 ? filterBySearchQuery(mockData, searchQuery)
@@ -890,7 +836,6 @@ const Googlemap = React.forwardRef(
             onResourcesFetched(filteredMockData);
             setNearbyResources(filteredMockData);
           } else {
-            // Apply search query filter if needed
             const filteredResources =
               searchQuery && searchQuery.trim() !== ""
                 ? filterBySearchQuery(validResources, searchQuery)
@@ -903,10 +848,8 @@ const Googlemap = React.forwardRef(
           console.error("Error in fetchNearbyPlaces:", error);
           setResourcesError("Failed to fetch resources. " + error.message);
 
-          // Use mock data as fallback
           const mockData = mockResources[category?.toLowerCase()] || [];
 
-          // Filter mock data if we have a search query
           const filteredMockData =
             searchQuery && searchQuery.trim() !== ""
               ? filterBySearchQuery(mockData, searchQuery)
@@ -918,7 +861,14 @@ const Googlemap = React.forwardRef(
           setLoadingResources(false);
         }
       },
-      [category, onResourcesFetched, searchQuery]
+      [
+        calculateRelevanceScore,
+        category,
+        fetchPlaceDetails,
+        onResourcesFetched,
+        performSearch,
+        searchQuery,
+      ]
     );
 
     const requestLocation = useCallback(() => {
@@ -935,7 +885,6 @@ const Googlemap = React.forwardRef(
             };
             setUserLocation(userPos);
 
-            // Get keywords for this category
             const keywords = categoryKeywords[category?.toLowerCase()] || [
               "pet store",
             ];
@@ -948,7 +897,6 @@ const Googlemap = React.forwardRef(
             );
             setUserLocation(defaultCenter);
 
-            // Get keywords for this category
             const keywords = categoryKeywords[category?.toLowerCase()] || [
               "pet store",
             ];
@@ -967,7 +915,6 @@ const Googlemap = React.forwardRef(
         );
         setUserLocation(defaultCenter);
 
-        // Get keywords for this category
         const keywords = categoryKeywords[category?.toLowerCase()] || [
           "pet store",
         ];

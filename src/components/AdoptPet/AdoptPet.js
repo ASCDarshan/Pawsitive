@@ -26,7 +26,6 @@ import PetsIcon from "@mui/icons-material/Pets";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InfoIcon from "@mui/icons-material/Info";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import MessageDialog from "../Profile/components/MessageDialog";
 import MessageDialogForAdoption from "./MessageDialogForAdoption";
 
 const AdoptPet = () => {
@@ -38,13 +37,11 @@ const AdoptPet = () => {
   const [availablePets, setAvailablePets] = useState([]);
   const [filteredPets, setFilteredPets] = useState([]);
   const [userPets, setUserPets] = useState([]);
-  const [selectedUserPet, setSelectedUserPet] = useState("");
   const [selectedUserPetData, setSelectedUserPetData] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [maxDistance, setMaxDistance] = useState(25);
   const [locationError, setLocationError] = useState(null);
   const [tabValue, setTabValue] = useState(0);
-  const [selectedPet, setSelectedPet] = useState(null);
 
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [currentMessage, setCurrentMessage] = useState({
@@ -98,7 +95,7 @@ const AdoptPet = () => {
           setUserPets(petsArray);
 
           if (petsArray.length > 0) {
-            setSelectedUserPet(petsArray[0].id);
+            // setSelectedUserPet(petsArray[0].id);
             setSelectedUserPetData(petsArray[0]);
           }
         }
@@ -224,39 +221,33 @@ const AdoptPet = () => {
     navigate(`/pet-detail/${pet.id}`);
   };
 
-  const handleOpenMessageDialog = (request) => {
-    const conversationId = `mating_${request.id}`;
+  const handleOpenMessageDialog = async (pet) => {
+    const conversationId = `adopt_${[user.uid, pet.userId].sort().join("_")}`;
+
+    const convoRef = ref(database, `conversations/${conversationId}`);
+    const snapshot = await get(convoRef);
+
+    if (!snapshot.exists()) {
+      await set(convoRef, {
+        participants: {
+          [user.uid]: true,
+          [pet.userId]: true,
+        },
+        petId: pet.id,
+        createdAt: Date.now(),
+        lastMessageTimestamp: Date.now(),
+        isAdoption: true,
+      });
+    }
 
     setCurrentMessage({
       text: "",
-      recipientId:
-        request.direction === "incoming"
-          ? request.senderId
-          : request.receiverId,
-      recipientName:
-        request.direction === "incoming"
-          ? request.senderName
-          : request.receiverName,
-      petId:
-        request.direction === "incoming"
-          ? request.receiverPetId
-          : request.senderPetId,
-      receiverPetId:
-        request.direction === "incoming"
-          ? request.senderPetId
-          : request.receiverPetId,
-      matingRequestId: request.id,
-      conversationId: conversationId,
-      receiverPet: {
-        name:
-          request.direction === "incoming"
-            ? request.senderPetName
-            : request.receiverPetName,
-        image:
-          request.direction === "incoming"
-            ? request.senderPetImage
-            : request.receiverPetImage,
-      },
+      recipientId: pet.userId,
+      recipientName: pet.owner?.displayName || "Pet Owner",
+      senderPet: selectedUserPetData,
+      receiverPet: pet,
+      conversationId,
+      isAdoption: true,
     });
 
     setOpenMessageDialog(true);

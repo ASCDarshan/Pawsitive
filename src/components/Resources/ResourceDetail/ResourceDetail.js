@@ -5,12 +5,8 @@ import { ref, get } from "firebase/database";
 import { db, database, auth } from "../../../firebase";
 import Googlemap from "../../GoogleMap/GoogleMap";
 
-const PawPrintFrame = ({ themeColor = "lavender" }) => {
-  return (
-    <div className="absolute -inset-4 pointer-events-none z-0">
-      {/* Paw prints remain the same */}
-    </div>
-  );
+const PawPrintFrame = () => {
+  return <div className="absolute -inset-4 pointer-events-none z-0"></div>;
 };
 
 const ResourceDetail = () => {
@@ -20,12 +16,9 @@ const ResourceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [userAuthenticated, setUserAuthenticated] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUserAuthenticated(!!user);
-    });
+    const unsubscribe = auth.onAuthStateChanged((user) => {});
     return () => unsubscribe();
   }, []);
 
@@ -39,7 +32,6 @@ const ResourceDetail = () => {
     try {
       console.log("Fetching resource with ID:", resourceId);
 
-      // First try to get from session storage (for Google Maps resources)
       const storedResources = sessionStorage.getItem("mapResources");
       if (storedResources) {
         const parsedResources = JSON.parse(storedResources);
@@ -51,14 +43,13 @@ const ResourceDetail = () => {
           console.log("Found resource in session storage");
           setResource({
             ...foundResource,
-            id: resourceId, // Ensure we have the correct ID
+            id: resourceId,
           });
           setLoading(false);
           return;
         }
       }
 
-      // Then try Realtime Database
       try {
         const resourceRef = ref(database, `resources/${resourceId}`);
         const snapshot = await get(resourceRef);
@@ -73,7 +64,6 @@ const ResourceDetail = () => {
           return;
         }
 
-        // Try webResources collection as fallback
         const webResourceRef = ref(database, `webResources/${resourceId}`);
         const webSnapshot = await get(webResourceRef);
 
@@ -90,7 +80,6 @@ const ResourceDetail = () => {
         console.warn("Realtime DB error:", rtdbError);
       }
 
-      // Finally try Firestore
       try {
         const resourceRef = doc(db, "resources", resourceId);
         const docSnap = await getDoc(resourceRef);
@@ -105,7 +94,6 @@ const ResourceDetail = () => {
           return;
         }
 
-        // Try webResources collection in Firestore
         const webResourceRef = doc(db, "webResources", resourceId);
         const webDocSnap = await getDoc(webResourceRef);
 
@@ -119,7 +107,6 @@ const ResourceDetail = () => {
           return;
         }
 
-        // If we get here, the resource wasn't found anywhere
         setError("Resource not found in any data source");
       } catch (firestoreError) {
         console.error("Firestore error:", firestoreError);
@@ -269,7 +256,6 @@ const ResourceDetail = () => {
                 </h2>
 
                 <div className="space-y-3">
-                  {/* Address */}
                   <div className="flex items-start">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -301,7 +287,6 @@ const ResourceDetail = () => {
                     </div>
                   </div>
 
-                  {/* Phone */}
                   {resource.phone && resource.phone !== "N/A" && (
                     <div className="flex items-start">
                       <svg
@@ -325,7 +310,6 @@ const ResourceDetail = () => {
                     </div>
                   )}
 
-                  {/* Email */}
                   {resource.email && (
                     <div className="flex items-start">
                       <svg
@@ -349,7 +333,6 @@ const ResourceDetail = () => {
                     </div>
                   )}
 
-                  {/* Website */}
                   {resource.website && resource.website !== "N/A" && (
                     <div className="flex items-start">
                       <svg
@@ -380,7 +363,6 @@ const ResourceDetail = () => {
                     </div>
                   )}
 
-                  {/* Hours */}
                   {(resource.hours || resource.time) && (
                     <div className="flex items-start">
                       <svg
@@ -420,7 +402,6 @@ const ResourceDetail = () => {
                     </div>
                   )}
 
-                  {/* Rating */}
                   {resource.rating > 0 && (
                     <div className="flex items-start">
                       <svg
@@ -498,7 +479,6 @@ const ResourceDetail = () => {
               </div>
             </div>
 
-            {/* Description */}
             {resource.description && (
               <div className="mt-8">
                 <h2 className="text-xl font-semibold text-gray-800 mb-3">
@@ -510,7 +490,6 @@ const ResourceDetail = () => {
               </div>
             )}
 
-            {/* Actions */}
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               {resource.lat && resource.lng && (
                 <button

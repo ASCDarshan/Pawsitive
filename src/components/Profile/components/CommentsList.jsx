@@ -1,11 +1,11 @@
 // components/CommentsList.jsx
 import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardHeader, 
-  CardContent, 
+import {
+  Box,
+  Typography,
+  Card,
+  CardHeader,
+  CardContent,
   CardActions,
   Avatar,
   Button,
@@ -15,21 +15,18 @@ import {
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 const CommentsList = ({ comments = [], navigate }) => {
-  // Format date for display
   const formatDate = (dateValue) => {
     if (!dateValue) return "Unknown date";
-    
+
     let date;
     if (dateValue.toDate) {
-      // Firestore timestamp
       date = dateValue.toDate();
     } else if (dateValue instanceof Date) {
       date = dateValue;
     } else {
-      // Try to parse as date string
       date = new Date(dateValue);
     }
-    
+
     return date.toLocaleString();
   };
 
@@ -38,12 +35,12 @@ const CommentsList = ({ comments = [], navigate }) => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         My Comments
       </Typography>
-      
+
       {comments.length > 0 ? (
         <List>
           {comments.map((comment) => (
             <Box key={comment.id} sx={{ mb: 2 }}>
-              <Card variant="outlined" sx={{ 
+              <Card variant="outlined" sx={{
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 '&:hover': {
                   transform: 'translateY(-4px)',
@@ -81,10 +78,10 @@ const CommentsList = ({ comments = [], navigate }) => {
           ))}
         </List>
       ) : (
-        <Box 
-          sx={{ 
-            p: 4, 
-            borderRadius: 2, 
+        <Box
+          sx={{
+            p: 4,
+            borderRadius: 2,
             backgroundColor: '#f5f5f5',
             display: 'flex',
             flexDirection: 'column',
