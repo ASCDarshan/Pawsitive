@@ -1,13 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { auth } from "../../firebase";
+import { auth, database } from "../../firebase";
 import logo from "../../images/logo.png";
 import BottomNavigation from "./BottomNavigation";
+import { get, ref } from "firebase/database";
 
 const Header = () => {
   const [user, setUser] = useState(null);
+  const [matingRequests, setMatingRequests] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -21,6 +26,127 @@ const Header = () => {
     navigate("/login");
     setIsMenuOpen(false);
   };
+
+  useEffect(() => {
+    if (user && location.pathname === "/profile") {
+      fetchMatingRequests();
+    }
+  }, [user, location.pathname]);
+
+  const fetchMatingRequests = async () => {
+    if (!user) return;
+
+    try {
+      const incomingRequestsRef = ref(
+        database,
+        `matingRequests/received/${user.uid}`
+      );
+      const sentRequestsRef = ref(database, `matingRequests/sent/${user.uid}`);
+
+      const incomingSnapshot = await get(incomingRequestsRef);
+      const sentSnapshot = await get(sentRequestsRef);
+
+      const requests = [];
+
+      if (incomingSnapshot.exists()) {
+        const incomingData = incomingSnapshot.val();
+
+        for (const requestId in incomingData) {
+          const request = incomingData[requestId];
+
+          const senderUserRef = ref(database, `users/${request.senderId}`);
+          const senderSnapshot = await get(senderUserRef);
+          const senderData = senderSnapshot.exists()
+            ? senderSnapshot.val()
+            : { displayName: "Unknown User" };
+
+          const senderPetRef = ref(
+            database,
+            `userPets/${request.senderId}/${request.senderPetId}`
+          );
+          const senderPetSnapshot = await get(senderPetRef);
+          const senderPetData = senderPetSnapshot.exists()
+            ? senderPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
+          const receiverPetRef = ref(
+            database,
+            `userPets/${user.uid}/${request.receiverPetId}`
+          );
+          const receiverPetSnapshot = await get(receiverPetRef);
+          const receiverPetData = receiverPetSnapshot.exists()
+            ? receiverPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
+          requests.push({
+            id: requestId,
+            ...request,
+            direction: "incoming",
+            senderName: senderData.displayName,
+            senderPetName: senderPetData.name,
+            senderPetImage: senderPetData.image,
+            senderPetBreed: senderPetData.breed,
+            receiverPetName: receiverPetData.name,
+            receiverPetImage: receiverPetData.image,
+          });
+        }
+      }
+
+      if (sentSnapshot.exists()) {
+        const sentData = sentSnapshot.val();
+
+        for (const requestId in sentData) {
+          const request = sentData[requestId];
+
+          const receiverUserRef = ref(database, `users/${request.receiverId}`);
+          const receiverSnapshot = await get(receiverUserRef);
+          const receiverData = receiverSnapshot.exists()
+            ? receiverSnapshot.val()
+            : { displayName: "Unknown User" };
+
+          const senderPetRef = ref(
+            database,
+            `userPets/${user.uid}/${request.senderPetId}`
+          );
+          const senderPetSnapshot = await get(senderPetRef);
+          const senderPetData = senderPetSnapshot.exists()
+            ? senderPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
+          const receiverPetRef = ref(
+            database,
+            `userPets/${request.receiverId}/${request.receiverPetId}`
+          );
+          const receiverPetSnapshot = await get(receiverPetRef);
+          const receiverPetData = receiverPetSnapshot.exists()
+            ? receiverPetSnapshot.val()
+            : { name: "Unknown Pet" };
+
+          requests.push({
+            id: requestId,
+            ...request,
+            direction: "outgoing",
+            receiverName: receiverData.displayName,
+            senderPetName: senderPetData.name,
+            senderPetImage: senderPetData.image,
+            receiverPetName: receiverPetData.name,
+            receiverPetImage: receiverPetData.image,
+            receiverPetBreed: receiverPetData.breed,
+          });
+        }
+      }
+
+      requests.sort((a, b) => b.createdAt - a.createdAt);
+
+      setMatingRequests(requests);
+    } catch (error) {
+      console.error("Error fetching mating requests:", error);
+    }
+  };
+
+  const pendingRequestsCount = matingRequests.filter(
+    (req) => req.direction === "incoming" && req.status === "pending"
+  ).length;
 
   return (
     <>
@@ -41,6 +167,29 @@ const Header = () => {
                   <NavLink to="/dog-resources">Dog Resources</NavLink>
                   <NavLink to="/cat-resources">Cat Resources</NavLink>
                   <NavLink to="/profile">Profile</NavLink>
+                  <NavLink to="/profile">
+                    <div className="flex items-center relative">
+                      <svg
+                        className="h-5 w-5 mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                        />
+                      </svg>
+                      {pendingRequestsCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                          {pendingRequestsCount}
+                        </span>
+                      )}
+                      Notifications
+                    </div>
+                  </NavLink>
                   <button
                     onClick={handleLogout}
                     className="text-lavender-200 hover:text-white hover:bg-lavender-700 px-3 py-1 rounded transition-colors"
@@ -97,6 +246,29 @@ const Header = () => {
               </MobileNavLink>
               <MobileNavLink to="/profile" onClick={() => setIsMenuOpen(false)}>
                 Profile
+              </MobileNavLink>
+              <MobileNavLink to="/profile" onClick={() => setIsMenuOpen(false)}>
+                <div className="flex items-center relative">
+                  <svg
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                  Notifications
+                  {pendingRequestsCount > 0 && (
+                    <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {pendingRequestsCount}
+                    </span>
+                  )}
+                </div>
               </MobileNavLink>
               <button
                 onClick={handleLogout}

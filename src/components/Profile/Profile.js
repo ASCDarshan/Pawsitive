@@ -48,7 +48,7 @@ import UserInfo from "./components/UserInfo";
 import PetCard from "./components/PetCard";
 import PetDialog from "./components/PetDialog";
 import ResourcesList from "./components/ResourcesList";
-import CommentsList from "./components/CommentsList";
+// import CommentsList from "./components/CommentsList";
 import VaccinationDialog from "./components/VaccinationDialog";
 import MessageDialog from "./components/MessageDialog";
 import ConversationsList from "./components/ConversationsList";
@@ -73,7 +73,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const user = auth.currentUser;
   const [likedResources, setLikedResources] = useState([]);
-  const [comments, setComments] = useState([]);
+  // const [comments, setComments] = useState([]);
   const [pets, setPets] = useState([]);
   const [openPetDialog, setOpenPetDialog] = useState(false);
   const [profileTabValue, setProfileTabValue] = useState(0);
@@ -225,7 +225,7 @@ const Profile = () => {
           }
         }
 
-        setComments(commentsArray);
+        // setComments(commentsArray);
       } else {
         const commentsArray = [];
         const resourcesCollection = collection(db, "resources");
@@ -254,7 +254,7 @@ const Profile = () => {
           });
         }
 
-        setComments(commentsArray);
+        // setComments(commentsArray);
       }
     } catch (error) {
       console.error("Error fetching user comments:", error);
@@ -691,7 +691,7 @@ const Profile = () => {
           <Badge badgeContent={pendingRequestsCount} color="error">
             <Chip
               icon={<NotificationsIcon />}
-              label={`Pending Requests`}
+              label={`${pendingRequestsCount} Pending Requests`}
               color={pendingRequestsCount > 0 ? "primary" : "default"}
               onClick={() => setProfileTabValue(2)}
               sx={{ display: { xs: "none", sm: "flex" } }}
@@ -1123,14 +1123,12 @@ const Profile = () => {
                           </Button>
                         )}
 
-                        {request.status === "accepted" && (
-                          <IconButton
-                            size="small"
-                            onClick={(e) => handleRequestMenuOpen(e, request)}
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                        )}
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleRequestMenuOpen(e, request)}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
                       </Box>
                     </Box>
                   </Card>
@@ -1174,9 +1172,9 @@ const Profile = () => {
           )}
         </TabPanel>
 
-        <TabPanel value={profileTabValue} index={3}>
+        {/* <TabPanel value={profileTabValue} index={3}>
           <CommentsList comments={comments} navigate={navigate} />
-        </TabPanel>
+        </TabPanel> */}
 
         <PetDialog
           open={openPetDialog}
@@ -1211,6 +1209,7 @@ const Profile = () => {
           recipientId={currentMessage.recipientId}
           recipientName={currentMessage.recipientName}
           senderPet={currentMessage.senderPet}
+          receiverPet={currentMessage.receiverPet}
           matingRequestId={currentMessage.matingRequestId}
           tabValue={tabValue}
         />
