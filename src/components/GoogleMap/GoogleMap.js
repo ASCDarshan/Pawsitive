@@ -655,8 +655,6 @@ const Googlemap = React.forwardRef(
           type: type,
         };
 
-        console.log(`Searching for: ${keyword} with type: ${type}`);
-
         service.nearbySearch(request, (results, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK) {
             console.log(
@@ -724,9 +722,6 @@ const Googlemap = React.forwardRef(
           setNearbyResources(filteredMockData);
           return;
         }
-
-        console.log("Fetching nearby places for category:", category);
-        console.log("Using keywords:", keywords);
 
         const service = new window.google.maps.places.PlacesService(
           document.createElement("div")
@@ -820,7 +815,6 @@ const Googlemap = React.forwardRef(
           const validResources = detailedResources.filter(
             (resource) => resource !== null
           );
-          console.log(`Got details for ${validResources.length} resources`);
 
           if (validResources.length === 0) {
             console.log(
@@ -872,13 +866,11 @@ const Googlemap = React.forwardRef(
     );
 
     const requestLocation = useCallback(() => {
-      console.log("Requesting user location...");
       setLocationRequested(true);
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            console.log("Got user location:", position.coords);
             const userPos = {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
@@ -980,27 +972,27 @@ const Googlemap = React.forwardRef(
     }, [resourcesError]);
     useEffect(() => {
       if (userLocation) {
-        console.log("User location updated:", userLocation);
+        console.log("User location updated");
       }
     }, [userLocation]);
     useEffect(() => {
       if (nearbyResources.length > 0) {
-        console.log("Nearby resources updated:", nearbyResources);
+        console.log("Nearby resources updated:");
       }
     }, [nearbyResources]);
     useEffect(() => {
       if (selectedMarker) {
-        console.log("Selected marker:", selectedMarker);
+        console.log("Selected marker:");
       }
     }, [selectedMarker]);
     useEffect(() => {
       if (searchQuery) {
-        console.log("Search query updated:", searchQuery);
+        console.log("Search query updated:");
       }
     }, [searchQuery]);
     useEffect(() => {
       if (viewMode) {
-        console.log("View mode changed:", viewMode);
+        console.log("View mode changed:");
       }
     }, [viewMode]);
     useEffect(() => {
@@ -1010,12 +1002,12 @@ const Googlemap = React.forwardRef(
     }, [directions]);
     useEffect(() => {
       if (destination) {
-        console.log("Destination set:", destination);
+        console.log("Destination set:");
       }
     }, [destination]);
     useEffect(() => {
       if (category) {
-        console.log("Category changed:", category);
+        console.log("Category changed:");
       }
     }, [category]);
     useEffect(() => {
