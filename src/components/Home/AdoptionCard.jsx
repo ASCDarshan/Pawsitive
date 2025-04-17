@@ -7,12 +7,12 @@ const AdoptionCard = ({ emoji, title, description, buttonText, route, gradientFr
   const navigate = useNavigate();
 
   return (
-    <motion.div 
+    <motion.div
       className="bg-white rounded-2xl shadow-md overflow-hidden border border-lavender-100"
       variants={{
         hidden: { opacity: 0, y: 20 },
-        visible: { 
-          opacity: 1, 
+        visible: {
+          opacity: 1,
           y: 0,
           transition: { duration: 0.6 }
         }
@@ -32,10 +32,11 @@ const AdoptionCard = ({ emoji, title, description, buttonText, route, gradientFr
         </p>
         <button
           onClick={() => navigate(route)}
-          className={`w-full bg-gradient-to-r from-${buttonGradientFrom} to-${buttonGradientTo} hover:from-${buttonGradientFrom.replace("600", "700").replace("500", "600")} hover:to-${buttonGradientTo.replace("700", "800").replace("600", "700")} text-white py-3 rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg`}
+          className="w-full bg-gradient-to-r from-lavender-600 to-purple-600 hover:from-lavender-700 hover:to-purple-700 text-white py-3 rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg"
         >
           {buttonText}
         </button>
+
       </div>
     </motion.div>
   );

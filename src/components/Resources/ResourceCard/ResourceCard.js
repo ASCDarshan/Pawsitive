@@ -442,9 +442,7 @@ const ResourceCard = ({ resource, onResourceUpdated }) => {
     }
   };
 
-  const handleViewDetails = () => {
-    console.log("Viewing details for resource:", resource);
-
+  const handleViewDetails = (resource) => {
     if (resource.id) {
       navigate(`/resource-details/${resource.id}`, {
         state: { resourceData: resource },
@@ -589,7 +587,6 @@ const ResourceCard = ({ resource, onResourceUpdated }) => {
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               />
             </svg>
-            <span>{likes}</span>
           </button>
           <button
             onClick={() => setCommentDialogOpen(true)}
@@ -859,7 +856,7 @@ const ResourceCard = ({ resource, onResourceUpdated }) => {
 
       <div className="px-4 pb-4 grid grid-cols-2 gap-2">
         <button
-          onClick={handleViewDetails}
+          onClick={() => handleViewDetails(resource)}
           className="bg-lavender-600 hover:bg-lavender-700 text-white font-semibold py-2 px-4 rounded transition-colors"
         >
           View Details

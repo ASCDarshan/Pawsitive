@@ -5,6 +5,7 @@ import { ref, get } from "firebase/database";
 import { db, database } from "../../../firebase";
 import Googlemap from "../../GoogleMap/GoogleMap";
 import ResourceCard from "../ResourceCard/ResourceCard";
+import { SkeletonLoader } from "../../Loaders";
 
 const ResourceList = () => {
   const { category } = useParams();
@@ -384,13 +385,10 @@ const ResourceList = () => {
         </div>
 
         {loading || mapLoading ? (
-          <div className="flex justify-center items-center py-16">
-            <div
-              className={`animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-${themeColor}-600`}
-            ></div>
-            <p className={`ml-4 text-${themeColor}-700`}>
-              Finding pet resources...
-            </p>
+          <div className="min-h-screen bg-gradient-to-b from-lavender-50 to-white p-6">
+            <div className="max-w-7xl mx-auto">
+              <SkeletonLoader type="list" count={9} />
+            </div>
           </div>
         ) : (
           <>
