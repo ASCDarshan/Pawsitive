@@ -1085,8 +1085,8 @@ const Profile = () => {
                       }}
                     >
                       <Box>
-                        {request.direction === "incoming" &&
-                          request.status === "pending" && (
+                        {selectedRequest?.direction === "incoming" &&
+                          selectedRequest?.status === "pending" && (
                             <>
                               <Button
                                 variant="contained"
