@@ -217,7 +217,7 @@ const NearbyMates = () => {
     setSelectedUserPetData(petData);
   };
 
-  const handleDistanceChange = (newValue) => {
+  const handleDistanceChange = (event, newValue) => {
     setMaxDistance(newValue);
   };
 
